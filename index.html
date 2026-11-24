@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Hamilton · Compromisso LinkedIn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@600;700&display=swap">
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#0b0908; --card:#15100d; --card-2:#1a120d; --line:#2a1f18; --line-2:#3d2e24;
+  --fg:#f3ede6; --soft:#d9cfc5; --dim:#b5a99d;
+  --sun:#ff7a1a; --sun-2:#ffb347; --on-sun:#0b0908; --prog:#7a4a12; --grid:#17120e;
+  --display:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --body:Inter,ui-sans-serif,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg:#faf6f1; --card:#ffffff; --card-2:#fff4ea; --line:#e6dcd1; --line-2:#cfc2b4;
+  --fg:#1a120d; --soft:#3d2e24; --dim:#6b5f55;
+  --sun:#c9530a; --sun-2:#a8440a; --on-sun:#ffffff; --prog:#f6c9a0; --grid:#f1e9df;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font-family:var(--body); font-size:16px; line-height:1.5; }
+button { font-family:inherit; cursor:pointer; }
+button:focus-visible, a:focus-visible { outline:2px solid var(--sun-2); outline-offset:2px; }
+.mono { font-family:var(--mono); }
+.nav { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); }
+.nav-in, .wrap { max-width:1120px; margin:0 auto; padding-left:20px; padding-right:20px; }
+.nav-in { min-height:64px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.brand { display:flex; align-items:baseline; gap:10px; }
+.brand b { font-family:var(--display); font-size:20px; } .brand b i { color:var(--sun); font-style:normal; }
+.brand span { font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--dim); }
+.ghost { min-height:44px; padding:0 14px; border-radius:8px; border:1px solid var(--line-2); background:transparent; color:var(--fg); font-size:14px; font-weight:600; display:inline-flex; align-items:center; gap:8px; }
+.ghost:hover { border-color:var(--sun); color:var(--sun-2); }
+.wrap { padding-top:36px; padding-bottom:72px; display:flex; flex-direction:column; gap:28px; }
+.hero { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:20px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:40px 40px;
+  border:1px solid var(--line); border-radius:8px; padding:28px 24px; }
+.eyebrow { font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--sun-2); display:inline-flex; align-items:center; gap:10px; }
+.eyebrow::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--sun); }
+h1 { margin:10px 0 8px; font-family:var(--display); font-weight:700; font-size:clamp(32px,6vw,52px); letter-spacing:-.02em; line-height:1.04; }
+h1 em { font-style:normal; color:var(--sun); }
+.hero p { margin:0; color:var(--soft); max-width:56ch; }
+.hero a { color:var(--sun-2); font-family:var(--mono); font-size:13px; }
+.term { border:1px solid var(--line); background:var(--card); border-radius:8px; padding:14px 16px; font-family:var(--mono); font-size:13px; line-height:26px; color:var(--soft); min-width:min(100%,300px); }
+.term div { display:flex; justify-content:space-between; gap:24px; } .term .k { color:var(--dim); } .term .v { color:var(--fg); } .term .hi { color:var(--sun-2); }
+.tabs { display:none; gap:8px; }
+.tabs button { flex:1; min-height:46px; border-radius:8px; border:1px solid var(--line-2); background:transparent; color:var(--fg); font-size:15px; font-weight:600; }
+.tabs button[aria-pressed="true"] { background:var(--sun); border-color:var(--sun); color:var(--on-sun); }
+.cols { display:grid; grid-template-columns:minmax(0,5fr) minmax(0,7fr); gap:28px; align-items:start; }
+section { display:flex; flex-direction:column; gap:14px; min-width:0; }
+h2 { margin:0; font-family:var(--mono); font-weight:400; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); display:flex; justify-content:space-between; gap:12px; }
+.card { border:1px solid var(--line); background:var(--card); border-radius:8px; }
+.goal { padding:14px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); }
+.goal:last-child { border-bottom:0; }
+.goal .info { flex:1; min-width:0; display:flex; flex-direction:column; gap:8px; }
+.goal .top { display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-weight:600; font-size:15px; }
+.goal .top span:last-child { font-family:var(--mono); font-weight:500; font-size:14px; }
+.goal.done .top span:last-child { color:var(--sun-2); }
+.bar { height:6px; border-radius:3px; background:var(--line); overflow:hidden; } .bar i { display:block; height:6px; border-radius:3px; background:var(--sun); transition:width .2s; }
+.boxes { display:flex; flex-wrap:wrap; gap:10px; }
+.box { width:52px; height:52px; border-radius:8px; border:2px solid var(--line-2); background:transparent; color:var(--on-sun); font-size:26px; font-weight:700; line-height:1; }
+.box.on { background:var(--sun); border-color:var(--sun); }
+.week { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; padding:14px; }
+.day { display:flex; flex-direction:column; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; color:var(--dim); }
+.day i { width:100%; height:8px; border-radius:4px; background:var(--line); }
+.day.part i { background:var(--prog); } .day.full i { background:var(--sun); }
+.day.today { color:var(--sun-2); font-weight:500; }
+.miles { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+.mile { border:1px solid var(--line); background:var(--card); border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:2px; }
+.mile b { font-family:var(--display); font-size:26px; line-height:1.1; color:var(--dim); } .mile span { font-family:var(--mono); font-size:11px; color:var(--dim); }
+.mile.hit { border-color:var(--sun); } .mile.hit b { color:var(--sun); } .mile.hit span { color:var(--sun-2); }
+.prio { padding:0; margin:0; list-style:none; counter-reset:p; }
+.prio li { counter-increment:p; display:grid; grid-template-columns:auto minmax(0,1fr); gap:2px 14px; padding:14px 16px; border-bottom:1px solid var(--line); }
+.prio li:last-child { border-bottom:0; }
+.prio li::before { content:counter(p); grid-row:span 2; font-family:var(--display); font-weight:700; font-size:26px; line-height:1.1; color:var(--sun); }
+.prio b { font-size:15px; } .prio span { grid-column:2; font-size:14px; color:var(--soft); }
+.progress { padding:16px; display:flex; flex-direction:column; gap:10px; }
+.progress .top { display:flex; justify-content:space-between; align-items:baseline; font-weight:600; } .progress .top span:last-child { font-family:var(--mono); color:var(--sun-2); }
+.filters { display:flex; flex-wrap:wrap; gap:8px; }
+.filters button { min-height:40px; padding:0 14px; border-radius:8px; border:1px solid var(--line-2); background:transparent; color:var(--fg); font-size:13px; font-weight:500; }
+.filters button[aria-pressed="true"] { background:var(--sun); border-color:var(--sun); color:var(--on-sun); font-weight:600; }
+.row { width:100%; display:flex; align-items:flex-start; gap:14px; padding:16px; border:0; border-bottom:1px solid var(--line); background:transparent; color:var(--fg); text-align:left; font-size:17px; }
+.row:last-child { border-bottom:0; } .row:hover { background:var(--card-2); }
+.mark { width:30px; height:30px; flex-shrink:0; border-radius:6px; border:2px solid var(--line-2); display:flex; align-items:center; justify-content:center; color:var(--on-sun); font-size:20px; font-weight:700; line-height:1; }
+.num { width:22px; flex-shrink:0; font-family:var(--mono); font-size:13px; color:var(--dim); padding-top:5px; }
+.txt { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; padding-top:2px; } .txt > span { font-weight:500; } .txt small { font-size:14.5px; color:var(--dim); line-height:1.45; }
+.row.f .mark { background:var(--sun); border-color:var(--sun); } .row.f .txt > span { color:var(--dim); text-decoration:line-through; }
+footer { font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--dim); display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; align-items:center; }
+footer button { background:none; border:0; color:var(--dim); font:inherit; text-transform:inherit; letter-spacing:inherit; text-decoration:underline; min-height:44px; }
+@media (max-width:900px) {
+  .tabs { display:flex; } .cols { grid-template-columns:minmax(0,1fr); }
+  body[data-tab="hoje"] #sec-check, body[data-tab="check"] #sec-hoje { display:none; }
+}
+@media (max-width:480px) { .brand span { display:none; } }
+@media (prefers-reduced-motion:reduce) { .bar i { transition:none; } }
+</style>
+</head>
+<body data-tab="hoje">
+<div class="nav"><div class="nav-in">
+  <div class="brand"><b>compromisso<i>.</i></b><span>mentoria linkedin</span></div>
+  <button class="ghost" id="theme" type="button" aria-label="Alternar tema claro e escuro"><span id="theme-label">Tema claro</span></button>
+</div></div>
+
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <span class="eyebrow" id="today-label">hoje</span>
+      <h1>Olá, Hamilton<em>.</em></h1>
+      <p>Um pouco por dia, todo dia. Objetivo: vaga em <strong>Contas a Receber, Crédito e Cobrança</strong> na Grande Florianópolis.</p>
+      <p style="margin-top:8px"><a href="https://www.linkedin.com/in/hamilton-f-moreira-651978159/" target="_blank" rel="noopener">abrir meu perfil no LinkedIn ↗</a></p>
+    </div>
+    <div class="term" aria-label="Resumo">
+      <div style="display:block"><span class="k">$</span> <span class="hi">compromisso</span> --status</div>
+      <div><span class="k">dias seguidos →</span><span class="v" id="t-streak">0</span></div>
+      <div><span class="k">ações de hoje →</span><span class="v" id="t-today">0 de 10</span></div>
+      <div><span class="k">checklist →</span><span class="hi" id="t-check">0%</span></div>
+    </div>
+  </div>
+
+  <div class="tabs" role="group" aria-label="Seções">
+    <button type="button" data-tab="hoje" aria-pressed="true">Hoje</button>
+    <button type="button" data-tab="check" aria-pressed="false">Checklist</button>
+  </div>
+
+  <div class="cols">
+    <section id="sec-hoje">
+      <h2><span>01 — metas de hoje · 4 3 2 1</span><span id="g-count"></span></h2>
+      <div class="card" id="goals"></div>
+
+      <h2><span>02 — esta semana</span><span id="w-count"></span></h2>
+      <div class="card week" id="week"></div>
+      <div class="miles" id="miles"></div>
+
+      <h2><span>03 — três prioridades</span></h2>
+      <ol class="card prio">
+        <li><b>Trocar o título</b><span>Sair de "Autônomo | Prestação de Serviços" para as palavras da vaga: Contas a Receber, Crédito e Cobrança.</span></li>
+        <li><b>Crescer a rede</b><span>Hoje são 6 conexões. Com 4 convites por dia, são cerca de 120 no primeiro mês.</span></li>
+        <li><b>Descrever o cargo atual</b><span>Contar o que você faz como autônomo desde 2019: serviços, clientes e um resultado.</span></li>
+      </ol>
+    </section>
+
+    <section id="sec-check">
+      <h2><span>04 — checklist do perfil</span></h2>
+      <div class="card progress">
+        <div class="top"><span id="c-count"></span><span id="c-pct"></span></div>
+        <div class="bar" style="height:8px"><i id="c-bar" style="height:8px;width:0"></i></div>
+        <span style="color:var(--soft);font-size:15px">Terminou um item? Toque nele para marcar como feito.</span>
+      </div>
+      <div id="list"></div>
+    </section>
+  </div>
+
+  <footer><span>neogen. · consultoria linkedin estratégico</span><button type="button" id="reset">Voltar ao estado inicial</button></footer>
+</div>
+
+<script>
+// Estado inicial vem do diagnóstico do perfil (24 nov 2026). p = pendente, a = em andamento, f = feito, n = não se aplica.
+var GROUPS = [
+  ['Perfil', [
+    [1,'Imagem de fundo (capa)','f','Capa com nome e área financeira. Manter.'],
+    [2,'Foto','f','Foto nítida e sorrindo. Manter.'],
+    [3,'Título','a','Trocar para: Contas a Receber | Crédito e Cobrança | Negociação e Recuperação de Crédito | Cursando Administração.',1],
+    [4,'Resumo','a','Abrir pelo objetivo, incluir números reais e fechar com palavras-chave e contato.'],
+    [5,'Informações pessoais e de contato','p','Conferir e-mail e telefone no painel de contato.'],
+    [6,'Customizar URL','p','Trocar a URL automática por algo como /in/hamiltonfmoreira.',1],
+    [7,'URL no currículo e e-mail','p','Colocar a URL nova no currículo e na assinatura do e-mail.'],
+    [8,'Sessões do perfil','a','Adicionar Destaques e Cursos.'],
+    [9,'Descrever a experiência','a','Em cada cargo: o que fazia, para quem e um resultado. Destacar a parte financeira das vendas.',1],
+    [10,'Experiência atual (em busca de vaga)','a','Dar um nome descritivo ao cargo de autônomo e explicar os serviços prestados.',1],
+    [11,'Mídia: documentos, fotos, sites e vídeos','p','Anexar currículo em PDF e certificados nos Destaques.'],
+    [12,'Idiomas','a','Adicionar Português como nativo.'],
+    [13,'Competências técnicas e comportamentais','a','Fixar no topo: Contas a receber, Crédito e cobrança, Negociação. Incluir ferramentas que você usa.'],
+    [14,'Cursos, projetos e voluntariado','p','Incluir cursos feitos. Um de Excel e um de contas a receber já ajudam.'],
+    [15,'Formação acadêmica','f','Administração na Estácio. Manter.'],
+    [16,'Interesses: grupos, empresas e instituições','a','Seguir de 15 a 20 empresas-alvo da Grande Florianópolis.'],
+    [17,'Recomendar competências','p','Recomendar ex-colegas para receber de volta.'],
+    [18,'Solicitar recomendações 360º','p','Pedir a um ex-gestor, um ex-colega e um cliente.'],
+    [19,'Fornecer recomendações','p','Escrever uma ou duas para ex-colegas.'],
+    [20,'Interesses de carreira','f','Open to work ativo. Conferir se os cargos batem com o novo título.'],
+    [21,'Escrever artigos','p','Deixar para depois dos primeiros posts.']]],
+  ['Rede e vagas', [
+    [22,'Convites: avaliar para aceitar','p','Aceitar quem é da área, da região ou de RH.'],
+    [23,'Adicionar conexões simples','p','4 por dia, começando por quem você já conhece.',1],
+    [24,'Adicionar conexões personalizadas','p','Convite com nota curta para recrutadores e gestores financeiros.'],
+    [25,'Vagas: candidatura','p','Candidatar-se toda semana às vagas da área.'],
+    [26,'Alerta de vagas','p','Criar alertas: contas a receber, crédito e cobrança, assistente financeiro.']]],
+  ['Conteúdo e engajamento', [
+    [27,'Compartilhar artigos, fotos, vídeos e ideias','p','Primeiro post: apresentação curta com o objetivo profissional.'],
+    [28,'Utilizar # e seguir #','p','De 3 a 5 por post: #contasareceber, #cobranca, #financeiro.'],
+    [29,'Curtir, comentar e compartilhar (3/2/1)','p','Faz parte das metas diárias.'],
+    [30,'Notificações diárias','p','Um horário fixo por dia para abrir as notificações.'],
+    [31,'Interagir com grupos','p','Entrar em dois ou três grupos de financeiro e vagas em SC.']]],
+  ['Monitoramento', [
+    [32,'SSI: monitorar','p','Anotar o SSI de hoje como ponto de partida.'],
+    [33,'Indicadores do perfil: monitorar','p','Anotar visualizações e aparições em buscas toda semana.']]]
+];
+var GOALS = [['Novas conexões',4],['Curtidas',3],['Comentários',2],['Post ou compartilhamento',1]];
+function isItemDone(it) { return typeof data.s[it[0]] === 'boolean' ? data.s[it[0]] : it[2] === 'f'; }
+var KEY = 'compromisso-hamilton-v2';
+var data = { s:{}, days:{}, theme:null };
+try { var saved = JSON.parse(localStorage.getItem(KEY)); if (saved) { data.s = saved.s || {}; data.days = saved.days || {}; data.theme = saved.theme || null; } } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+
+function key(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function addDays(d, n) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; }
+function counts(k) { return data.days[k] || [0,0,0,0]; }
+function dayScore(k) { var c = counts(k), s = 0; GOALS.forEach(function (g, i) { s += Math.min(c[i], g[1]); }); return s; }
+function streak(today) {
+  var d = dayScore(key(today)) >= 10 ? today : addDays(today, -1), n = 0;
+  while (dayScore(key(d)) >= 10) { n++; d = addDays(d, -1); }
+  return n;
+}
+function el(id) { return document.getElementById(id); }
+
+function render() {
+  var today = new Date(), tk = key(today), c = counts(tk), score = dayScore(tk), st = streak(today);
+  el('today-label').textContent = today.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
+  el('goals').innerHTML = GOALS.map(function (g, i) {
+    var pct = Math.min(100, Math.round(c[i] / g[1] * 100));
+    var boxes = '';
+    for (var j = 0; j < g[1]; j++) {
+      var on = j < c[i];
+      boxes += '<button type="button" class="box' + (on ? ' on' : '') + '" data-i="' + i + '" data-j="' + j + '" aria-pressed="' + on + '" aria-label="' + g[0] + ': ' + (j + 1) + ' de ' + g[1] + '">' + (on ? '✓' : '') + '</button>';
+    }
+    return '<div class="goal' + (c[i] >= g[1] ? ' done' : '') + '"><div class="info"><div class="top"><span>' + g[0] + '</span><span>' + Math.min(c[i], g[1]) + ' de ' + g[1] + '</span></div>' +
+      '<div class="boxes">' + boxes + '</div></div></div>';
+  }).join('');
+  el('g-count').textContent = score + ' de 10';
+  el('t-today').textContent = score + ' de 10';
+  el('t-streak').textContent = st + (st === 1 ? ' dia' : ' dias');
+
+  var mondayOffset = (today.getDay() + 6) % 7, names = ['seg','ter','qua','qui','sex','sáb','dom'], full = 0;
+  el('week').innerHTML = names.map(function (nm, i) {
+    var d = addDays(today, i - mondayOffset), s = dayScore(key(d)), cls = s >= 10 ? ' full' : s > 0 ? ' part' : '';
+    if (s >= 10) full++;
+    return '<div class="day' + cls + (i === mondayOffset ? ' today' : '') + '"><i></i>' + (i === mondayOffset ? 'hoje' : nm) + '</div>';
+  }).join('');
+  el('w-count').textContent = full + ' de 7 dias completos';
+  el('miles').innerHTML = [10,30,45,100].map(function (m) {
+    var hit = st >= m;
+    return '<div class="mile' + (hit ? ' hit' : '') + '"><b>' + m + '</b><span>' + (hit ? 'conquistado' : 'faltam ' + (m - st)) + '</span></div>';
+  }).join('');
+
+  var done = 0, total = 0, html = '', sprint = '';
+  GROUPS.forEach(function (g) {
+    var rows = '';
+    g[1].forEach(function (it) {
+      var isDone = isItemDone(it);
+      total++; if (isDone) done++;
+      var row = '<button type="button" class="row' + (isDone ? ' f' : '') + '" data-id="' + it[0] + '" aria-pressed="' + isDone + '"><span class="mark">' + (isDone ? '✓' : '') + '</span><span class="num">' + it[0] + '</span>' +
+        '<span class="txt"><span>' + it[1] + '</span><small>' + it[3] + '</small></span></button>';
+      if (it[4]) sprint += row; else rows += row;
+    });
+    if (rows) html += '<h2 style="margin:6px 0 10px"><span>' + g[0] + '</span></h2><div class="card" style="margin-bottom:18px">' + rows + '</div>';
+  });
+  el('list').innerHTML = '<h2 style="margin:6px 0 10px;color:var(--sun-2)"><span>Para fazer esta semana</span></h2><div class="card" style="margin-bottom:18px;border-color:var(--line-2)">' + sprint + '</div>' + html;
+  var pct = total ? Math.round(done / total * 100) : 0;
+  el('c-count').textContent = done + ' de ' + total + ' itens feitos';
+  el('c-pct').textContent = pct + '%'; el('t-check').textContent = pct + '%';
+  el('c-bar').style.width = pct + '%';
+}
+
+el('goals').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  var i = +b.getAttribute('data-i'), j = +b.getAttribute('data-j'), tk = key(new Date()), c = counts(tk).slice();
+  c[i] = (c[i] === j + 1) ? j : j + 1; data.days[tk] = c; save(); render();
+  var again = document.querySelector('#goals button[data-i="' + i + '"][data-j="' + j + '"]'); if (again) again.focus();
+});
+el('list').addEventListener('click', function (e) {
+  var b = e.target.closest('button.row'); if (!b) return;
+  var id = b.getAttribute('data-id');
+  data.s[id] = b.getAttribute('aria-pressed') !== 'true'; save(); render();
+  var again = document.querySelector('button.row[data-id="' + id + '"]'); if (again) again.focus();
+});
+document.querySelector('.tabs').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  document.body.setAttribute('data-tab', b.getAttribute('data-tab'));
+  [].forEach.call(b.parentNode.children, function (x) { x.setAttribute('aria-pressed', x === b); });
+});
+function applyTheme() {
+  var t = data.theme || (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  document.documentElement.setAttribute('data-theme', t);
+  el('theme-label').textContent = t === 'dark' ? 'Tema claro' : 'Tema escuro';
+}
+el('theme').addEventListener('click', function () {
+  data.theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; save(); applyTheme();
+});
+var armed = false;
+el('reset').addEventListener('click', function () {
+  var b = el('reset');
+  if (!armed) { armed = true; b.textContent = 'Clique de novo para confirmar'; setTimeout(function () { armed = false; b.textContent = 'Voltar ao estado inicial'; }, 3000); return; }
+  data.s = {}; data.days = {}; save(); armed = false; b.textContent = 'Voltar ao estado inicial'; render();
+});
+applyTheme(); render();
+</script>
+</body>
+</html>
