@@ -240,3 +240,26 @@ footer.foot { font-family:var(--mono),monospace; font-size:11px; letter-spacing:
 @keyframes t-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
 @keyframes t-flame { 0%,100% { transform:scale(1) rotate(-2deg); } 50% { transform:scale(1.08) rotate(2deg); } }
 @media (prefers-reduced-motion:reduce) { .t-rise,.t-rise2,.t-rise3,.t-pop,.t-pulse,.t-float,.t-flame { animation:none; } .t-fall { display:none; } .tour .logo.spin .logo-c, .tour .logo.spin .logo-dot { animation:none; } }
+
+/* Telas cheias no celular e no app instalado: usar a altura visível de verdade e respeitar as áreas seguras */
+.auth { min-height:100dvh; padding:max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)); }
+.tour { height:100dvh; min-height:0; padding:max(14px, env(safe-area-inset-top)) 20px max(16px, env(safe-area-inset-bottom)); gap:14px; }
+.tour-body { min-height:0; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; }
+.tour-body::-webkit-scrollbar { display:none; }
+@media (max-width:560px) {
+  .auth { align-items:flex-start; }
+  .auth-card { gap:14px; }
+  .auth-card h1 { font-size:28px; }
+  .auth-card .word { margin-top:10px; } .auth-card .word p { font-size:15.5px; }
+  .auth-card .form { gap:12px; }
+  .auth-card .field small { font-size:13px; }
+}
+@media (max-height:740px) {
+  .tour-body { gap:12px; }
+  .tour-body h1 { font-size:27px; } .tour-body.center h1 { font-size:33px; }
+  .t-lead { font-size:16px; } .tour-body.center .t-lead { font-size:16.5px; }
+  .tour .logo { width:96px; height:96px; }
+  .t-rule { padding:11px 14px; } .t-rule b { font-size:16px; } .t-rule span { font-size:14.5px; }
+  .t-cta { min-height:50px; }
+  .t-box { width:56px; height:56px; }
+}
