@@ -23,7 +23,8 @@ export function Contributions({ days, today, username }: { days: ContribDay[]; t
           Dados públicos de github.com/{username}, atualizados a cada 30 minutos. Dias ativos no último ano: {active.size}.
         </div>
       </div>
-      <div className="card tiles-scroll" role="img" aria-label={`Contribuições no GitHub no último ano: ${active.size} dias ativos`}>
+      <div className="card">
+        <div className="tiles-scroll" role="img" aria-label={`Contribuições no GitHub no último ano: ${active.size} dias ativos`}>
         <div className="tiles">
           {Array.from({ length: blanks }, (_, i) => (
             <span key={'b' + i} className="tile blank" />
@@ -31,6 +32,16 @@ export function Contributions({ days, today, username }: { days: ContribDay[]; t
           {past.map((d) => (
             <span key={d.date} className={'tile' + (d.level ? ' l' + d.level : '')} title={`${d.date}: ${d.count}`} />
           ))}
+        </div>
+      </div>
+        <div className="tile-legend" aria-hidden="true">
+          <span style={{ marginRight: 4 }}>menos</span>
+          <span className="tile" />
+          <span className="tile l1" />
+          <span className="tile l2" />
+          <span className="tile l3" />
+          <span className="tile l4" />
+          <span style={{ marginLeft: 4 }}>mais</span>
         </div>
       </div>
       <Milestones value={run} />
