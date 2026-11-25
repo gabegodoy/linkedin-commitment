@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checklist LinkedIn</title>
+<style>
+:root { --bg:#0b0908; --card:#15100d; --line:#2a1f18; --line2:#3d2e24; --fg:#f3ede6; --soft:#d9cfc5; --dim:#b5a99d; --sun:#ff7a1a; --sun2:#ffb347; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 28px 16px 64px; display:flex; flex-direction:column; gap:20px; }
+.brand { font-weight:700; font-size:20px; } .brand span { color:var(--sun); }
+.eyebrow { font-family: ui-monospace, "JetBrains Mono", Menlo, monospace; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--sun2); }
+h1 { margin:0; font-size:34px; letter-spacing:-.02em; line-height:1.1; }
+input.name { height:48px; border-radius:8px; border:1px solid var(--line2); background:var(--card); color:var(--fg); font-size:16px; padding:0 14px; width:100%; }
+.card { border:1px solid var(--line); background:var(--card); border-radius:8px; }
+.progress { padding:16px; display:flex; flex-direction:column; gap:10px; }
+.progress .top { display:flex; justify-content:space-between; align-items:baseline; font-weight:600; }
+.bar { height:8px; border-radius:4px; background:var(--line); overflow:hidden; } .bar i { display:block; height:8px; background:var(--sun); border-radius:4px; }
+.legend { display:flex; flex-wrap:wrap; gap:6px 16px; font-family: ui-monospace, Menlo, monospace; font-size:12px; color:var(--dim); }
+h2 { margin:8px 0 0; font-family: ui-monospace, Menlo, monospace; font-weight:400; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim); display:flex; justify-content:space-between; }
+button.row { width:100%; min-height:50px; display:flex; align-items:center; gap:12px; padding:8px 14px; border:0; border-bottom:1px solid var(--line); background:transparent; color:var(--fg); text-align:left; font:inherit; font-size:15px; cursor:pointer; }
+button.row:last-child { border-bottom:0; } button.row:hover { background:#1a120d; }
+button.row:focus-visible { outline:2px solid var(--sun2); outline-offset:-2px; }
+.mark { width:22px; height:22px; flex-shrink:0; border-radius:5px; border:1px solid var(--line2); display:flex; align-items:center; justify-content:center; color:var(--bg); font-weight:700; font-size:14px; }
+.num { width:22px; flex-shrink:0; font-family: ui-monospace, Menlo, monospace; font-size:12px; color:var(--dim); }
+.label { flex:1; line-height:1.3; }
+.st { font-family: ui-monospace, Menlo, monospace; font-size:11px; color:var(--dim); flex-shrink:0; }
+.a .mark { background:#7a4a12; border-color:var(--sun2); } .a .st { color:var(--sun2); }
+.f .mark { background:var(--sun); border-color:var(--sun); } .f .label { color:var(--soft); } .f .st { color:var(--soft); }
+.n .mark { background:var(--line); border-color:var(--line); } .n .label { color:var(--dim); text-decoration: line-through; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; }
+.actions button { min-height:44px; padding:0 16px; border-radius:8px; border:1px solid var(--line2); background:transparent; color:var(--fg); font:inherit; font-size:14px; font-weight:600; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">compromisso<span>.</span></div>
+  <div>
+    <div class="eyebrow">Consultoria LinkedIn Estratégico</div>
+    <h1>Checklist LinkedIn</h1>
+  </div>
+  <input class="name" id="name" placeholder="Nome do mentorado" aria-label="Nome do mentorado">
+  <div class="card progress">
+    <div class="top"><span id="count"></span><span id="pct" style="color:var(--sun2)"></span></div>
+    <div class="bar"><i id="bar" style="width:0"></i></div>
+    <div class="legend"><span>toque no item para marcar como feito</span></div>
+  </div>
+  <div id="list"></div>
+  <div class="actions"><button id="reset" type="button">Zerar checklist</button></div>
+</div>
+<script>
+var GROUPS = [
+  ['Perfil', [
+    [1,'Imagem de fundo — capa 1400x425 (pixabay.com)'],[2,'Foto'],[3,'Título'],[4,'Resumo'],
+    [5,'Informações pessoais e de contato'],[6,'Customizar URL'],[7,'URL no currículo e e-mail'],
+    [8,'Sessões do perfil'],[9,'Descrever a experiência'],[10,'Adicionar experiência para desempregado'],
+    [11,'Mídia: link para documentos, fotos, sites, apresentações e vídeos externos'],[12,'Idiomas'],
+    [13,'Competências técnicas e comportamentais'],[14,'Cursos (e também projetos, voluntariado...)'],
+    [15,'Formação acadêmica'],[16,'Interesses — grupos, empresas, influencers e instituições de ensino'],
+    [17,'Recomendar competências — gatilho da reciprocidade'],[18,'Solicitar recomendações — 360º'],
+    [19,'Fornecer recomendações'],[20,'Interesses de carreira'],[21,'Escrever artigos — sua autoria']]],
+  ['Rede e vagas', [
+    [22,'Convites — avaliar para aceitar'],[23,'Adicionar conexões — simples'],
+    [24,'Adicionar conexões — personalizadas'],[25,'Vagas — candidatura'],[26,'Alerta de vagas']]],
+  ['Conteúdo e engajamento', [
+    [27,'Compartilhar artigos, fotos, vídeos e ideias'],[28,'Utilizar # e seguir #'],
+    [29,'Curtir, comentar e compartilhar (3/2/1)'],[30,'Notificações diárias'],[31,'Interagir com grupos']]],
+  ['Monitoramento', [[32,'SSI — monitorar'],[33,'Indicadores do perfil — monitorar']]]
+];
+var NEXT = { p:'a', a:'f', f:'n', n:'p' };
+var TXT = { p:'pendente', a:'em andamento', f:'feito', n:'não se aplica' };
+var KEY = 'checklist-linkedin-v1';
+var data = { name:'', s:{} };
+try { var saved = JSON.parse(localStorage.getItem(KEY)); if (saved) data = saved; } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+function render() {
+  var done = 0, total = 0, html = '';
+  GROUPS.forEach(function (g) {
+    var gd = 0, rows = '';
+    g[1].forEach(function (it) {
+      var st = data.s[it[0]] === 'f' ? 'f' : 'p';
+      if (st !== 'n') total++;
+      if (st === 'f') { done++; gd++; }
+      rows += '<button type="button" class="row ' + st + '" data-id="' + it[0] + '"><span class="mark">' + (st === 'f' ? '✓' : '') +
+        '</span><span class="num">' + it[0] + '</span><span class="label">' + it[1] + '</span></button>';
+    });
+    html += '<h2><span>' + g[0] + '</span><span>' + gd + '/' + g[1].length + '</span></h2><div class="card" style="margin:10px 0 18px">' + rows + '</div>';
+  });
+  document.getElementById('list').innerHTML = html;
+  var pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('count').textContent = done + ' de ' + total + ' itens feitos';
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('bar').style.width = pct + '%';
+}
+document.getElementById('list').addEventListener('click', function (e) {
+  var b = e.target.closest('button.row'); if (!b) return;
+  var id = b.getAttribute('data-id');
+  data.s[id] = data.s[id] === 'f' ? 'p' : 'f'; save(); render();
+  var again = document.querySelector('button.row[data-id="' + id + '"]'); if (again) again.focus();
+});
+var nameEl = document.getElementById('name');
+nameEl.value = data.name || '';
+nameEl.addEventListener('input', function () { data.name = nameEl.value; save(); });
+var armed = false, resetBtn = document.getElementById('reset');
+resetBtn.addEventListener('click', function () {
+  if (!armed) { armed = true; resetBtn.textContent = 'Clique de novo para zerar'; setTimeout(function () { armed = false; resetBtn.textContent = 'Zerar checklist'; }, 3000); return; }
+  data.s = {}; save(); render(); armed = false; resetBtn.textContent = 'Zerar checklist';
+});
+render();
+</script>
+</body>
+</html>
