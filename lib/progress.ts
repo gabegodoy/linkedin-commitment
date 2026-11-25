@@ -4,6 +4,12 @@ export type Counts = [number, number, number, number];
 export type Logs = Record<string, Counts>;
 
 export const GOAL_LABELS = ['Novas conexões', 'Curtidas', 'Comentários', 'Post ou compartilhamento'] as const;
+export const GOAL_HINTS = [
+  'Gente da sua área e recrutadores, sempre com uma nota no convite.',
+  'Em posts de recrutadores e de pessoas da sua área.',
+  'Comente de verdade, puxe conversa. Isso mostra que seu perfil está ativo.',
+  'Algo ligado à vaga que você quer.',
+] as const;
 export const GOAL_COLUMNS = ['connections', 'likes', 'comments', 'posts'] as const;
 export const MILESTONES = [10, 30, 45, 100] as const;
 export const ZERO: Counts = [0, 0, 0, 0];

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { addDays, mondayOf, monthLabel, weekday } from '@/lib/dates';
-import { GOAL_COLUMNS, GOAL_LABELS, MILESTONES, ZERO, isFull, score, streak, total, type Counts, type Logs } from '@/lib/progress';
+import { GOAL_COLUMNS, GOAL_HINTS, GOAL_LABELS, MILESTONES, ZERO, isFull, score, streak, total, type Counts, type Logs } from '@/lib/progress';
 import { CHEERS } from '@/lib/words';
 
 const DAY_NAMES = ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'];
@@ -115,6 +115,7 @@ export function Today({ userId, goals, today, initialLogs }: { userId: string; g
                   {Math.min(counts[i], goals[i])} de {goals[i]}
                 </span>
               </div>
+              <small className="goal-hint">{GOAL_HINTS[i]}</small>
               <div className="boxes">
                 {Array.from({ length: goals[i] }, (_, j) => {
                   const on = j < counts[i];

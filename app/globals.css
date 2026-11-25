@@ -194,3 +194,5 @@ footer.foot { font-family:var(--mono),monospace; font-size:11px; letter-spacing:
 .tile.blank { background:transparent; }
 .tile-legend { display:flex; align-items:center; gap:4px; padding:0 16px 14px; font-family:var(--mono),monospace; font-size:11px; color:var(--dim); }
 .tile-legend .tile { display:inline-block; }
+
+.goal-hint { font-size:14.5px; line-height:1.4; color:var(--dim); margin-top:-2px; }
