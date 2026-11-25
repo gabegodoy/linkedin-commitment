@@ -7,9 +7,10 @@ import { toLogs } from './progress';
 
 export const getSession = cache(async () => {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  if (!data.user) return null;
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).maybeSingle();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return null;
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
   if (!profile) return null;
   return { supabase, profile: profile as Profile };
 });

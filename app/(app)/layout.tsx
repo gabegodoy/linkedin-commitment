@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { InstallPrompt } from '@/components/InstallPrompt';
 import { Nav, type NavLink } from '@/components/Nav';
 import { requireProfile } from '@/lib/session';
 import { MODULES, has } from '@/lib/types';
@@ -16,7 +17,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <>
       <Nav links={links} />
-      <main className="wrap">{children}</main>
+      <main className="wrap">
+        <InstallPrompt />
+        {children}
+      </main>
     </>
   );
 }
