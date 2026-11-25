@@ -5,9 +5,31 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { friendly } from '@/lib/errors';
 import { GITHUB_USER_RE } from '@/lib/github';
-import type { Profile } from '@/lib/types';
+import { MODULES, type Module, type Profile } from '@/lib/types';
 
 type Msg = { ok: boolean; text: string } | null;
+function ModulePicker({ value, onChange }: { value: Module[]; onChange: (v: Module[]) => void }) {
+  return (
+    <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
+      <legend style={{ padding: 0, marginBottom: 6 }}>O que liberar para esta pessoa</legend>
+      {MODULES.map((m) => (
+        <label key={m.id} className="check" style={{ alignItems: 'flex-start' }}>
+          <input
+            type="checkbox"
+            style={{ marginTop: 2, flexShrink: 0 }}
+            checked={value.includes(m.id)}
+            onChange={(e) => onChange(MODULES.map((x) => x.id).filter((id) => (id === m.id ? e.target.checked : value.includes(id))))}
+          />
+          <span>
+            {m.label}
+            <small style={{ display: 'block' }}>{m.hint}</small>
+          </span>
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+
 const Note = ({ msg }: { msg: Msg }) =>
   msg ? (
     <p className={'msg ' + (msg.ok ? 'ok' : 'err')} role="status">
@@ -21,7 +43,7 @@ export function NewMenteeForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isDev, setIsDev] = useState(false);
+  const [modules, setModules] = useState<Module[]>(['daily', 'checklist']);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<Msg>(null);
 
@@ -29,7 +51,7 @@ export function NewMenteeForm() {
     e.preventDefault();
     setBusy(true);
     setMsg(null);
-    const { data, error } = await createClient().rpc('create_mentee', { p_email: email, p_password: password, p_name: name, p_is_dev: isDev });
+    const { data, error } = await createClient().rpc('create_mentee', { p_email: email, p_password: password, p_name: name, p_modules: modules });
     setBusy(false);
     if (error) {
       setMsg({ ok: false, text: friendly(error.message) });
@@ -64,10 +86,7 @@ export function NewMenteeForm() {
         <small>Pelo menos 8 caracteres. Você passa para a pessoa, e ela pode trocar depois em Conta.</small>
         <input required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" />
       </label>
-      <label className="check">
-        <input type="checkbox" checked={isDev} onChange={(e) => setIsDev(e.target.checked)} />
-        É dev (libera Código todo dia e Projeto da semana)
-      </label>
+      <ModulePicker value={modules} onChange={setModules} />
       <Note msg={msg} />
       <div className="actions">
         <button className="btn" type="submit" disabled={busy}>
@@ -95,7 +114,7 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
     objective: profile.objective ?? '',
     linkedin_url: profile.linkedin_url ?? '',
     github_username: profile.github_username ?? '',
-    is_dev: profile.is_dev,
+    modules: profile.modules,
     goal_connections: profile.goal_connections,
     goal_likes: profile.goal_likes,
     goal_comments: profile.goal_comments,
@@ -137,6 +156,7 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
         Link do perfil no LinkedIn
         <input type="url" value={f.linkedin_url} onChange={(e) => set({ linkedin_url: e.target.value })} placeholder="https://www.linkedin.com/in/..." />
       </label>
+      {f.modules.includes('daily') && (
       <div className="field">
         Metas diárias
         <div className="grid4">
@@ -148,11 +168,9 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
           ))}
         </div>
       </div>
-      <label className="check">
-        <input type="checkbox" checked={f.is_dev} onChange={(e) => set({ is_dev: e.target.checked })} />
-        É dev (libera Código todo dia e Projeto da semana)
-      </label>
-      {f.is_dev && (
+      )}
+      <ModulePicker value={f.modules} onChange={(modules) => set({ modules })} />
+      {f.modules.includes('ctd') && (
         <label className="field">
           Usuário do GitHub
           <input value={f.github_username} onChange={(e) => set({ github_username: e.target.value })} autoCapitalize="none" spellCheck={false} />

@@ -1,12 +1,10 @@
-import { redirect } from 'next/navigation';
 import { ProjectHistory, ProjectPanel } from '@/components/ProjectPanel';
 import { addDays, mondayOf, todayISO } from '@/lib/dates';
 import { requireMentee } from '@/lib/session';
 import type { Project } from '@/lib/types';
 
 export default async function ProjetoPage() {
-  const { supabase, profile } = await requireMentee();
-  if (!profile.is_dev) redirect('/hoje');
+  const { supabase, profile } = await requireMentee('project');
   const weekStart = mondayOf(todayISO());
   const { data } = await supabase.from('weekly_projects').select('*').eq('user_id', profile.id).order('week_start', { ascending: false }).limit(30);
   const projects = (data ?? []) as Project[];

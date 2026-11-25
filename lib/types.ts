@@ -1,11 +1,28 @@
 import type { Counts } from './progress';
 
+export const MODULES = [
+  { id: 'daily', label: 'Metas diárias do LinkedIn', hint: 'Conexões, curtidas, comentários e posts de cada dia.', href: '/hoje', nav: 'Hoje' },
+  { id: 'checklist', label: 'Checklist completo do perfil', hint: 'Os 33 itens da consultoria.', href: '/checklist', nav: 'Checklist' },
+  { id: 'ctd', label: 'Código todo dia', hint: 'Ladrilhos do GitHub com sequência e marcos.', href: '/ctd', nav: 'Código' },
+  { id: 'project', label: 'Projeto da semana', hint: 'Um projeto por semana, com entrega e post.', href: '/projeto', nav: 'Projeto' },
+] as const;
+export type Module = (typeof MODULES)[number]['id'];
+
+export function has(p: { modules: Module[] }, m: Module) {
+  return p.modules.includes(m);
+}
+
+/** Primeira tela liberada para a pessoa. */
+export function homeOf(p: { modules: Module[] }) {
+  return MODULES.find((m) => p.modules.includes(m.id))?.href ?? '/conta';
+}
+
 export type Profile = {
   id: string;
   email: string;
   name: string;
   role: 'mentor' | 'mentee';
-  is_dev: boolean;
+  modules: Module[];
   objective: string | null;
   linkedin_url: string | null;
   github_username: string | null;

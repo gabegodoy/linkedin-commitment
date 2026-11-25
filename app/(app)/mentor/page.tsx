@@ -4,7 +4,7 @@ import { TOTAL_ITEMS } from '@/lib/checklist';
 import { addDays, formatLong, formatShort, mondayOf, todayISO } from '@/lib/dates';
 import { ZERO, isFull, score, streak, toLogs, total, type Logs } from '@/lib/progress';
 import { requireMentor } from '@/lib/session';
-import { goalsOf, type Profile } from '@/lib/types';
+import { goalsOf, has, type Profile } from '@/lib/types';
 
 export default async function MentorPage() {
   const { supabase } = await requireMentor();
@@ -47,7 +47,7 @@ export default async function MentorPage() {
           Pessoas<em>.</em>
         </h1>
         <p className="soft" style={{ margin: 0 }}>
-          {mentees.length === 0 ? 'Cadastre a primeira pessoa da mentoria.' : `${mentees.length} ${mentees.length === 1 ? 'pessoa' : 'pessoas'} na mentoria. ${rows.filter((r) => r.todayScore >= r.sum && r.sum > 0).length} já fecharam as metas de hoje.`}
+          {mentees.length === 0 ? 'Cadastre a primeira pessoa da mentoria.' : `${mentees.length} ${mentees.length === 1 ? 'pessoa' : 'pessoas'} na mentoria. ${rows.filter((r) => has(r.p, 'daily') && r.todayScore >= r.sum && r.sum > 0).length} já fecharam as metas de hoje.`}
         </p>
       </div>
       <NewMenteeForm />
@@ -66,25 +66,25 @@ export default async function MentorPage() {
               <span className="who">
                 <b>
                   {r.p.name}
-                  {r.p.is_dev && <span className="tag">dev</span>}
+                  {has(r.p, 'ctd') && <span className="tag">dev</span>}
                 </b>
                 <small className={r.quiet ? 'warn' : undefined}>{r.last ? (r.last === today ? 'ativo hoje' : `última atividade em ${formatShort(r.last)}`) : 'ainda sem atividade'}</small>
               </span>
               <span className="cell">
                 <small>Hoje</small>
-                {r.todayScore} de {r.sum}
+                {has(r.p, 'daily') ? `${r.todayScore} de ${r.sum}` : '—'}
               </span>
               <span className="cell">
                 <small>Dias seguidos</small>
-                {r.run}
+                {has(r.p, 'daily') ? r.run : '—'}
               </span>
               <span className="cell">
                 <small>Semana</small>
-                {r.weekFull} de 7
+                {has(r.p, 'daily') ? `${r.weekFull} de 7` : '—'}
               </span>
               <span className="cell">
                 <small>Checklist</small>
-                {r.done} de {TOTAL_ITEMS}
+                {has(r.p, 'checklist') ? `${r.done} de ${TOTAL_ITEMS}` : '—'}
               </span>
               <span className="go muted">abrir →</span>
             </Link>

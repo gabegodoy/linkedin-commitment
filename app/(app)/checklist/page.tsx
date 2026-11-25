@@ -3,7 +3,7 @@ import { todayISO } from '@/lib/dates';
 import { loadMenteeData, requireMentee } from '@/lib/session';
 
 export default async function ChecklistPage() {
-  const { supabase, profile } = await requireMentee();
+  const { supabase, profile } = await requireMentee('checklist');
   const data = await loadMenteeData(supabase, profile.id, todayISO());
   return (
     <section style={{ maxWidth: 760, width: '100%', margin: '0 auto' }}>

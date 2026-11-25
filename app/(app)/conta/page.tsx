@@ -16,7 +16,7 @@ export default async function ContaPage() {
           {profile.email}
         </p>
       </div>
-      {profile.is_dev && (
+      {profile.modules.includes('ctd') && (
         <>
           <h2>
             <span>GitHub</span>

@@ -3,10 +3,10 @@ import { Today } from '@/components/Today';
 import { ALL_ITEMS, TOTAL_ITEMS } from '@/lib/checklist';
 import { formatLong, todayISO } from '@/lib/dates';
 import { loadMenteeData, requireMentee } from '@/lib/session';
-import { firstName, goalsOf } from '@/lib/types';
+import { firstName, goalsOf, has } from '@/lib/types';
 
 export default async function HojePage() {
-  const { supabase, profile } = await requireMentee();
+  const { supabase, profile } = await requireMentee('daily');
   const today = todayISO();
   const data = await loadMenteeData(supabase, profile.id, today);
   const done = new Set(data.done);
@@ -31,10 +31,11 @@ export default async function HojePage() {
           )}
         </div>
       </div>
-      <div className="cols">
+      <div className={has(profile, 'checklist') ? 'cols' : undefined} style={has(profile, 'checklist') ? undefined : { maxWidth: 560, width: '100%', margin: '0 auto' }}>
         <section>
           <Today userId={profile.id} goals={goalsOf(profile)} today={today} initialLogs={data.logs} />
         </section>
+        {has(profile, 'checklist') && (
         <section>
           <h2>
             <span>Checklist do perfil</span>
@@ -69,6 +70,7 @@ export default async function HojePage() {
             Abrir o checklist completo
           </Link>
         </section>
+        )}
       </div>
     </>
   );

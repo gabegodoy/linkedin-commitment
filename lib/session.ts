@@ -1,7 +1,7 @@
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from './supabase/server';
-import type { MentorItem, Profile } from './types';
+import { has, homeOf, type MentorItem, type Module, type Profile } from './types';
 import { addDays } from './dates';
 import { toLogs } from './progress';
 
@@ -20,15 +20,16 @@ export async function requireProfile() {
   return session;
 }
 
-export async function requireMentee() {
+export async function requireMentee(module?: Module) {
   const session = await requireProfile();
   if (session.profile.role === 'mentor') redirect('/mentor');
+  if (module && !has(session.profile, module)) redirect(homeOf(session.profile));
   return session;
 }
 
 export async function requireMentor() {
   const session = await requireProfile();
-  if (session.profile.role !== 'mentor') redirect('/hoje');
+  if (session.profile.role !== 'mentor') redirect(homeOf(session.profile));
   return session;
 }
 
