@@ -69,7 +69,7 @@ export function whatsappLink(number: string, message: string) {
 export function nudgeMessage(name: string, quiet: boolean, run: number) {
   const first = firstName(name);
   if (quiet) {
-    return `Oi, ${first}! Senti sua falta no compromisso. Tudo bem por aí? Que tal retomar hoje, nem que seja com uma meta só? "Não nos cansemos de fazer o bem, porque a seu tempo ceifaremos." (Gálatas 6:9) Conte comigo!`;
+    return `Oi, ${first}! Senti sua falta no compromisso. Tudo bem por aí? Que tal retomar hoje, nem que seja com uma meta só? "Não nos cansemos então de fazer o bem, porque a seu tempo viremos a recolher muitas bênçãos, se formos perseverantes." (Gálatas 6:9) Conte comigo!`;
   }
   if (run >= 3) return `Oi, ${first}! Vi que você está há ${run} dias seguidos cumprindo as metas. Que orgulho! Continue firme, o resultado vem.`;
   return `Oi, ${first}! Passando para dizer que estou acompanhando seu progresso. Um pouco por dia, todo dia. Conte comigo!`;

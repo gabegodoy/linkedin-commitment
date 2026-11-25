@@ -6,7 +6,7 @@ export const WORDS: Word[] = [
   { text: 'Constância vence talento quando o talento não tem constância.' },
   { text: 'Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.', ref: 'Salmos 37:5' },
   { text: 'Um pouco por dia vira muito em um mês.' },
-  { text: 'E não nos cansemos de fazer o bem, porque a seu tempo ceifaremos, se não houvermos desfalecido.', ref: 'Gálatas 6:9' },
+  { text: 'Não nos cansemos então de fazer o bem, porque a seu tempo viremos a recolher muitas bênçãos, se formos perseverantes.', ref: 'Gálatas 6:9' },
   { text: 'Você não precisa fazer tudo hoje. Precisa fazer o de hoje.' },
   { text: 'Confia ao Senhor as tuas obras, e teus pensamentos serão estabelecidos.', ref: 'Provérbios 16:3' },
   { text: 'Quem aparece todo dia é lembrado na hora da vaga.' },
