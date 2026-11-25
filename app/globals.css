@@ -155,3 +155,20 @@ footer.foot { font-family:var(--mono),monospace; font-size:11px; letter-spacing:
 .wa { border-color:#1f8f4e; color:#3ddc84; } :root[data-theme="light"] .wa { color:#157a3f; }
 .person .go { display:flex; gap:8px; align-items:center; justify-content:flex-end; }
 @media (max-width:900px) { .person .go { display:flex; grid-column:1 / -1; justify-content:flex-start; } }
+
+.field label { cursor:pointer; }
+.field small.field-err { color:var(--err); } .field small.field-ok { color:var(--sun-2); }
+.field input[aria-invalid="true"] { border-color:var(--err); }
+.field input::placeholder, .field textarea::placeholder { color:var(--dim); opacity:.7; }
+.affix { display:flex; align-items:stretch; border:1px solid var(--line-2); border-radius:8px; background:var(--bg); overflow:hidden; }
+.affix:focus-within { outline:2px solid var(--sun-2); outline-offset:2px; }
+.affix > span { display:flex; align-items:center; padding:0 0 0 14px; color:var(--dim); font-size:16px; font-weight:400; white-space:nowrap; }
+.affix input, .field .affix input { border:0; border-radius:0; background:transparent; min-width:0; flex:1; outline:none; }
+.affix > span + input { padding-left:2px; }
+.affix > button { border:0; border-left:1px solid var(--line-2); background:transparent; color:var(--sun-2); font-size:14px; font-weight:600; padding:0 14px; min-width:92px; }
+.stepper { display:flex; flex-direction:column; gap:6px; }
+.stepper small { color:var(--dim); font-size:14px; }
+.stepper > div { display:flex; align-items:center; border:1px solid var(--line-2); border-radius:8px; overflow:hidden; background:var(--bg); }
+.stepper button { width:44px; height:46px; border:0; background:transparent; color:var(--fg); font-size:22px; line-height:1; }
+.stepper button:hover:not(:disabled) { background:var(--card-2); color:var(--sun-2); }
+.stepper output { flex:1; text-align:center; font-family:var(--mono),monospace; font-size:17px; font-weight:500; }

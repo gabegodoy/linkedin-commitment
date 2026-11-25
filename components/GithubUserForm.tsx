@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { GithubField } from './Fields';
+import { githubUser } from '@/lib/mask';
 import { createClient } from '@/lib/supabase/client';
 import { GITHUB_USER_RE } from '@/lib/github';
 
@@ -13,7 +15,7 @@ export function GithubUserForm({ userId, initial }: { userId: string; initial: s
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const user = value.trim().replace(/^@/, '').replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '');
+    const user = githubUser(value);
     if (user && !GITHUB_USER_RE.test(user)) {
       setMsg({ ok: false, text: 'Usuário inválido. Use só o nome, por exemplo: torvalds.' });
       return;
@@ -27,11 +29,7 @@ export function GithubUserForm({ userId, initial }: { userId: string; initial: s
 
   return (
     <form className="form" onSubmit={submit}>
-      <label className="field">
-        Usuário do GitHub
-        <small>O nome que aparece em github.com/seu-usuario.</small>
-        <input value={value} onChange={(e) => setValue(e.target.value)} autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-      </label>
+<GithubField label="Usuário do GitHub" hint="Pode colar o link do seu perfil ou digitar só o nome." value={value} onChange={setValue} />
       {msg && (
         <p className={'msg ' + (msg.ok ? 'ok' : 'err')} role="status">
           {msg.text}

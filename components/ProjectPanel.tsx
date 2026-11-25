@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { UrlField } from './Fields';
 import { createClient } from '@/lib/supabase/client';
 import { addDays, formatShort } from '@/lib/dates';
 import type { Project } from '@/lib/types';
+import { completeUrl } from '@/lib/mask';
 
 function weekLabel(weekStart: string) {
   return `${formatShort(weekStart)} a ${formatShort(addDays(weekStart, 6))}`;
@@ -36,13 +38,10 @@ function PostForm({ userId, project }: { userId: string; project: Project }) {
       className="form"
       onSubmit={(e) => {
         e.preventDefault();
-        save(project.week_start, { title: project.title, post_url: url.trim() || null });
+        save(project.week_start, { title: project.title, post_url: completeUrl(url) || null });
       }}
     >
-      <label className="field">
-        Link do post no LinkedIn
-        <input type="url" required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://www.linkedin.com/posts/..." />
-      </label>
+      <UrlField label="Link do post no LinkedIn" hint="No post, toque nos três pontinhos e em Copiar link." required value={url} onChange={setUrl} placeholder="https://www.linkedin.com/posts/..." />
       {error && <p className="msg err">{error}</p>}
       <div className="actions">
         <button className="btn" type="submit" disabled={busy}>
@@ -62,7 +61,7 @@ export function ProjectPanel({ userId, weekStart, current, pendingPost }: { user
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const ok = await save(weekStart, { title: title.trim(), description: description.trim() || null, repo_url: repo.trim() || null });
+    const ok = await save(weekStart, { title: title.trim(), description: description.trim() || null, repo_url: completeUrl(repo) || null });
     if (ok) setEditing(false);
   }
 
@@ -131,10 +130,7 @@ export function ProjectPanel({ userId, weekStart, current, pendingPost }: { user
             O que ele vai fazer?
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} maxLength={1000} />
           </label>
-          <label className="field">
-            Link do repositório (opcional)
-            <input type="url" value={repo} onChange={(e) => setRepo(e.target.value)} placeholder="https://github.com/..." />
-          </label>
+          <UrlField label="Link do repositório (opcional)" value={repo} onChange={setRepo} placeholder="https://github.com/usuario/projeto" />
           {error && <p className="msg err">{error}</p>}
           <div className="actions">
             <button className="btn" type="submit" disabled={busy}>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { EmailField, PasswordField } from './Fields';
 import { createClient } from '@/lib/supabase/client';
 import { friendly } from '@/lib/errors';
 
@@ -22,7 +23,7 @@ export function SetupForm() {
       setBusy(false);
       return;
     }
-    const login = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    const login = await supabase.auth.signInWithPassword({ email, password });
     if (login.error) {
       setError(friendly(login.error.message));
       setBusy(false);
@@ -37,15 +38,8 @@ export function SetupForm() {
         Seu nome
         <input required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
       </label>
-      <label className="field">
-        E-mail
-        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
-      </label>
-      <label className="field">
-        Senha
-        <small>Pelo menos 8 caracteres.</small>
-        <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
-      </label>
+      <EmailField label="E-mail" value={email} onChange={setEmail} />
+      <PasswordField label="Senha" hint="Pelo menos 8 caracteres." value={password} onChange={setPassword} />
       {error && (
         <p className="msg err" role="alert">
           {error}

@@ -74,10 +74,6 @@ export function nudgeMessage(name: string, quiet: boolean, run: number) {
   return `Oi, ${first}! Passando para dizer que estou acompanhando seu progresso. Um pouco por dia, todo dia. Conte comigo!`;
 }
 
-export function cleanGithub(raw: string) {
-  return raw.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?github\.com\//, '').replace(/\/.*$/, '');
-}
-
 export function firstName(name: string) {
   return name.trim().split(/\s+/)[0] || name;
 }

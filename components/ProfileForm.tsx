@@ -1,17 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import { GithubField, LinkedinField, PasswordField, PhoneField } from './Fields';
 import { createClient } from '@/lib/supabase/client';
 import { friendly } from '@/lib/errors';
 import { GITHUB_USER_RE } from '@/lib/github';
-import { cleanGithub, normalizeWhatsapp, type Profile } from '@/lib/types';
+import { githubUser, linkedinSlug, linkedinUrl, maskPhone } from '@/lib/mask';
+import { normalizeWhatsapp, type Profile } from '@/lib/types';
 
-/** Dados que a própria pessoa preenche. No primeiro acesso também pede a senha nova. */
+/** Dados que a própria pessoa preenche. No primeiro acesso também oferece trocar a senha. */
 export function ProfileForm({ profile, onboarding = false }: { profile: Profile; onboarding?: boolean }) {
   const showGithub = profile.modules.includes('ctd') || profile.modules.includes('project');
   const [name, setName] = useState(profile.name);
-  const [whatsapp, setWhatsapp] = useState(profile.whatsapp ?? '');
-  const [linkedin, setLinkedin] = useState(profile.linkedin_url ?? '');
+  const [whatsapp, setWhatsapp] = useState(maskPhone(profile.whatsapp));
+  const [linkedin, setLinkedin] = useState(linkedinSlug(profile.linkedin_url));
   const [github, setGithub] = useState(profile.github_username ?? '');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -21,12 +23,12 @@ export function ProfileForm({ profile, onboarding = false }: { profile: Profile;
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const wa = normalizeWhatsapp(whatsapp);
-    if (wa === false) return fail('Confira o WhatsApp: DDD e número, por exemplo 48 99999-0000.');
-    const gh = cleanGithub(github);
-    if (gh && !GITHUB_USER_RE.test(gh)) return fail('Usuário do GitHub inválido. Use só o nome, por exemplo: torvalds.');
-    const li = linkedin.trim();
-    if (li && !/^https?:\/\/([a-z]+\.)?linkedin\.com\//i.test(li)) return fail('O link do LinkedIn precisa começar com https://www.linkedin.com/');
+    if (wa === false) return fail('Confira o WhatsApp: DDD e número, por exemplo (48) 99999-0000.');
+    const gh = githubUser(github);
+    const li = linkedinSlug(linkedin);
+    if (gh && !GITHUB_USER_RE.test(gh)) return fail('Usuário do GitHub inválido.');
     if (password && password.length < 8) return fail('A senha precisa ter pelo menos 8 caracteres.');
+    if (name.trim().length < 2) return fail('Informe o seu nome.');
     setBusy(true);
     setMsg(null);
     const supabase = createClient();
@@ -39,7 +41,7 @@ export function ProfileForm({ profile, onboarding = false }: { profile: Profile;
     }
     const { error } = await supabase
       .from('profiles')
-      .update({ name: name.trim(), whatsapp: wa, linkedin_url: li || null, github_username: gh || null, ...(onboarding ? { onboarded_at: new Date().toISOString() } : {}) })
+      .update({ name: name.trim().replace(/\s+/g, ' '), whatsapp: wa, linkedin_url: linkedinUrl(li), github_username: gh || null, ...(onboarding ? { onboarded_at: new Date().toISOString() } : {}) })
       .eq('id', profile.id);
     if (error) {
       setBusy(false);
@@ -57,31 +59,13 @@ export function ProfileForm({ profile, onboarding = false }: { profile: Profile;
     <form className="form" onSubmit={submit}>
       <label className="field">
         Seu nome
-        <input required value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
+        <input required maxLength={80} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" autoCapitalize="words" />
       </label>
-      <label className="field">
-        WhatsApp
-        <small>Com DDD. Seu mentor usa para falar com você.</small>
-        <input type="tel" inputMode="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="48 99999-0000" autoComplete="tel" />
-      </label>
-      <label className="field">
-        Link do seu perfil no LinkedIn
-        <small>Abra o seu perfil no LinkedIn, copie o endereço e cole aqui. Pode deixar em branco e preencher depois.</small>
-        <input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://www.linkedin.com/in/..." />
-      </label>
-      {showGithub && (
-        <label className="field">
-          Usuário do GitHub
-          <small>O nome que aparece em github.com/seu-usuario.</small>
-          <input value={github} onChange={(e) => setGithub(e.target.value)} autoCapitalize="none" autoCorrect="off" spellCheck={false} />
-        </label>
-      )}
+      <PhoneField label="WhatsApp" hint="Com DDD. Seu mentor usa para falar com você." value={whatsapp} onChange={setWhatsapp} />
+      <LinkedinField label="Seu perfil no LinkedIn" hint="Pode colar o link inteiro do seu perfil, que a gente ajusta. Se não souber, deixe em branco." value={linkedin} onChange={setLinkedin} />
+      {showGithub && <GithubField label="Usuário do GitHub" hint="Pode colar o link do seu perfil ou digitar só o nome." value={github} onChange={setGithub} />}
       {onboarding && (
-        <label className="field">
-          Crie uma senha só sua
-          <small>Pelo menos 8 caracteres. Se preferir continuar com a senha que recebeu, deixe em branco.</small>
-          <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" autoCapitalize="none" />
-        </label>
+        <PasswordField label="Crie uma senha só sua" hint="Pelo menos 8 caracteres. Para continuar com a senha que recebeu, deixe em branco." value={password} onChange={setPassword} required={false} startVisible />
       )}
       {msg && (
         <p className={'msg ' + (msg.ok ? 'ok' : 'err')} role="status">

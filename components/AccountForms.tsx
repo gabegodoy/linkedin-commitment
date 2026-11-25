@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { PasswordField } from './Fields';
 import { createClient } from '@/lib/supabase/client';
 import { friendly } from '@/lib/errors';
 
 export function PasswordForm() {
   const [password, setPassword] = useState('');
-  const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -21,15 +21,7 @@ export function PasswordForm() {
 
   return (
     <form className="form" onSubmit={submit}>
-      <label className="field">
-        Nova senha
-        <small>Pelo menos 8 caracteres.</small>
-        <input type={show ? 'text' : 'password'} required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
-      </label>
-      <label className="check">
-        <input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} />
-        Mostrar a senha
-      </label>
+      <PasswordField label="Nova senha" hint="Pelo menos 8 caracteres." value={password} onChange={setPassword} />
       {msg && (
         <p className={'msg ' + (msg.ok ? 'ok' : 'err')} role="status">
           {msg.text}
