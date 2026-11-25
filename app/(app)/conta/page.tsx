@@ -1,4 +1,4 @@
-import { LogoutButton, PasswordForm } from '@/components/AccountForms';
+import { LogoutButton, PasswordForm, TestEmailButton } from '@/components/AccountForms';
 import { ProfileForm } from '@/components/ProfileForm';
 import { requireProfile } from '@/lib/session';
 
@@ -23,6 +23,16 @@ export default async function ContaPage() {
           </h2>
           <div className="card pad">
             <ProfileForm profile={profile} />
+          </div>
+        </>
+      )}
+      {profile.role === 'mentor' && (
+        <>
+          <h2>
+            <span>E-mail de boas-vindas</span>
+          </h2>
+          <div className="card pad">
+            <TestEmailButton />
           </div>
         </>
       )}
