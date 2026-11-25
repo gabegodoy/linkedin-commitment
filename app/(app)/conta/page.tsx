@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { LogoutButton, PasswordForm, TestEmailButton } from '@/components/AccountForms';
 import { ProfileForm } from '@/components/ProfileForm';
 import { requireProfile } from '@/lib/session';
@@ -43,6 +44,11 @@ export default async function ContaPage() {
         <PasswordForm />
       </div>
       <div className="actions">
+        {profile.role === 'mentee' && (
+          <Link href="/passeio" className="ghost">
+            Rever o passo a passo
+          </Link>
+        )}
         <LogoutButton />
       </div>
     </section>

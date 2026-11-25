@@ -7,6 +7,7 @@ import { MODULES, has } from '@/lib/types';
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile } = await requireProfile();
   if (profile.role === 'mentee' && !profile.onboarded_at) redirect('/bem-vindo');
+  if (profile.role === 'mentee' && !profile.toured_at) redirect('/passeio');
   const links: NavLink[] =
     profile.role === 'mentor'
       ? [

@@ -28,6 +28,7 @@ export type Profile = {
   github_username: string | null;
   whatsapp: string | null;
   onboarded_at: string | null;
+  toured_at: string | null;
   weekly_items: number;
   goal_connections: number;
   goal_likes: number;
