@@ -1,81 +1,52 @@
-// E-mail de boas-vindas. Tabelas e estilos inline para funcionar em Gmail, Outlook e celulares.
+// E-mail de acesso. De propósito simples: texto curto, um único link, sem senha no corpo
+// e sem truques de marketing, para os provedores tratarem como mensagem pessoal e não como spam.
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
-export type WelcomeData = { nome: string; email: string; senha: string; link: string; mentor: string };
+export type WelcomeData = { nome: string; link: string; mentor: string };
 
 export function welcomeEmail(data: WelcomeData) {
-  const v = { nome: esc(data.nome), email: esc(data.email), senha: esc(data.senha), link: esc(data.link), mentor: esc(data.mentor) };
+  const v = { nome: esc(data.nome), link: esc(data.link), mentor: esc(data.mentor) };
+  const font = "font-family:Arial,Helvetica,sans-serif;";
   return {
-    subject: `${data.nome}, seu acesso ao compromisso. está pronto`,
+    subject: `${data.nome}, seu acesso ao Compromisso`,
     text: [
-      `Que bom ter você aqui, ${data.nome}.`,
+      `Olá, ${data.nome}!`,
       '',
-      'Seu espaço de acompanhamento está pronto. Um pouco por dia, todo dia.',
+      `Aqui é ${data.mentor}. Criei o seu espaço no Compromisso, onde vamos acompanhar juntos a sua evolução no LinkedIn.`,
       '',
-      '"Esforça-te, e tem bom ânimo; não temas, nem te espantes, porque o Senhor, teu Deus, é contigo." (Josué 1:9)',
+      'Para entrar, abra o link abaixo e crie a sua senha:',
+      data.link,
       '',
-      `Entre em: ${data.link}`,
-      `E-mail: ${data.email}`,
-      `Senha: ${data.senha}`,
+      'O link vale por 7 dias e só pode ser usado uma vez. Se ele expirar, é só me pedir outro.',
       '',
-      'No primeiro acesso você confere seus dados e pode criar uma senha só sua.',
-      '',
+      'Um pouco por dia, todo dia. Conte comigo!',
       data.mentor,
     ].join('\n'),
     html: `<!doctype html>
 <html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark light">
-<title>Seu acesso ao compromisso.</title>
-</head>
-<body style="margin:0;padding:0;background:#0b0908;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${v.nome}, seu espaço está pronto. Um pouco por dia, todo dia.</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b0908;">
-<tr><td align="center" style="padding:32px 16px;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
-    <tr><td style="padding:0 4px 24px;font-family:'Space Grotesk',Arial,Helvetica,sans-serif;font-size:22px;font-weight:700;color:#f3ede6;">
-      compromisso<span style="color:#ff7a1a;">.</span>
-      <span style="font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:11px;font-weight:400;letter-spacing:1px;text-transform:uppercase;color:#b5a99d;">&nbsp;mentoria linkedin</span>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Seu acesso ao Compromisso</title></head>
+<body style="margin:0;padding:0;background:#f6f1eb;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f1eb;">
+<tr><td align="center" style="padding:28px 16px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #e6dcd1;border-radius:8px;">
+    <tr><td style="padding:28px 28px 8px;${font}font-size:20px;font-weight:bold;color:#1a120d;">compromisso<span style="color:#c9530a;">.</span></td></tr>
+    <tr><td style="padding:8px 28px 0;${font}font-size:17px;line-height:1.6;color:#3d2e24;">
+      <p style="margin:0 0 14px;">Olá, ${v.nome}!</p>
+      <p style="margin:0 0 14px;">Aqui é ${v.mentor}. Criei o seu espaço no Compromisso, onde vamos acompanhar juntos a sua evolução no LinkedIn.</p>
+      <p style="margin:0 0 20px;">Para entrar, toque no botão e crie a sua senha:</p>
     </td></tr>
-    <tr><td style="background:#15100d;border:1px solid #2a1f18;border-radius:8px;padding:32px 28px;">
-      <p style="margin:0 0 10px;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:#ffb347;">● primeiro acesso</p>
-      <h1 style="margin:0 0 14px;font-family:'Space Grotesk',Arial,Helvetica,sans-serif;font-size:32px;line-height:1.1;font-weight:700;color:#f3ede6;">Que bom ter você aqui, ${v.nome}<span style="color:#ff7a1a;">.</span></h1>
-      <p style="margin:0 0 20px;font-family:Inter,Arial,Helvetica,sans-serif;font-size:17px;line-height:1.55;color:#d9cfc5;">Seu espaço de acompanhamento está pronto. A ideia é simples: um pouco por dia, todo dia. Você faz as ações no LinkedIn, marca aqui, e a gente vê o seu perfil crescer junto.</p>
-
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-        <tr><td style="border-left:3px solid #ff7a1a;padding:4px 0 4px 16px;">
-          <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:18px;line-height:1.5;color:#f3ede6;">Esforça-te, e tem bom ânimo; não temas, nem te espantes, porque o Senhor, teu Deus, é contigo.</p>
-          <p style="margin:6px 0 0;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:12px;color:#ffb347;">Josué 1:9</p>
-        </td></tr>
-      </table>
-
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0b0908;border:1px solid #3d2e24;border-radius:8px;margin:0 0 24px;">
-        <tr><td style="padding:16px 18px;font-family:Inter,Arial,Helvetica,sans-serif;font-size:16px;line-height:1.7;color:#d9cfc5;">
-          <span style="color:#b5a99d;">E-mail:</span> <strong style="color:#f3ede6;">${v.email}</strong><br>
-          <span style="color:#b5a99d;">Senha:</span> <strong style="color:#f3ede6;">${v.senha}</strong>
-        </td></tr>
-      </table>
-
-      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-        <tr><td style="background:#ff7a1a;border-radius:8px;">
-          <a href="${v.link}" style="display:inline-block;padding:15px 28px;font-family:Inter,Arial,Helvetica,sans-serif;font-size:17px;font-weight:700;color:#0b0908;text-decoration:none;">Entrar no compromisso</a>
-        </td></tr>
-      </table>
-
-      <p style="margin:0 0 8px;font-family:Inter,Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;color:#f3ede6;">Como funciona</p>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Inter,Arial,Helvetica,sans-serif;font-size:16px;line-height:1.5;color:#d9cfc5;">
-        <tr><td width="34" valign="top" style="padding:6px 0;font-family:'Space Grotesk',Arial,sans-serif;font-size:20px;font-weight:700;color:#ff7a1a;">1</td><td style="padding:6px 0;">Entre com o e-mail e a senha acima. No primeiro acesso você confere seus dados e pode criar uma senha só sua.</td></tr>
-        <tr><td width="34" valign="top" style="padding:6px 0;font-family:'Space Grotesk',Arial,sans-serif;font-size:20px;font-weight:700;color:#ff7a1a;">2</td><td style="padding:6px 0;">Todo dia, faça suas metas no LinkedIn e toque nos quadrados para marcar.</td></tr>
-        <tr><td width="34" valign="top" style="padding:6px 0;font-family:'Space Grotesk',Arial,sans-serif;font-size:20px;font-weight:700;color:#ff7a1a;">3</td><td style="padding:6px 0;">Toda semana, cuide dos itens do checklist que aparecem em "Para fazer esta semana".</td></tr>
-      </table>
-
-      <p style="margin:24px 0 0;font-family:Inter,Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;color:#d9cfc5;">Você não está sozinho nessa caminhada. Qualquer dúvida, é só me chamar.</p>
-      <p style="margin:12px 0 0;font-family:Inter,Arial,Helvetica,sans-serif;font-size:16px;color:#f3ede6;"><strong>${v.mentor}</strong></p>
+    <tr><td style="padding:0 28px;">
+      <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#c9530a;border-radius:8px;">
+        <a href="${v.link}" style="display:inline-block;padding:14px 26px;${font}font-size:17px;font-weight:bold;color:#ffffff;text-decoration:none;">Criar minha senha e entrar</a>
+      </td></tr></table>
     </td></tr>
-    <tr><td style="padding:20px 4px 0;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#b5a99d;">neogen. · consultoria linkedin estratégico</td></tr>
+    <tr><td style="padding:20px 28px 28px;${font}font-size:15px;line-height:1.6;color:#6b5f55;">
+      <p style="margin:0 0 14px;">Se o botão não abrir, copie este endereço no navegador:<br><a href="${v.link}" style="color:#a8440a;word-break:break-all;">${v.link}</a></p>
+      <p style="margin:0 0 14px;">O link vale por 7 dias e só pode ser usado uma vez. Se ele expirar, é só me pedir outro.</p>
+      <p style="margin:0;font-size:17px;color:#3d2e24;">Um pouco por dia, todo dia. Conte comigo!<br><strong>${v.mentor}</strong></p>
+    </td></tr>
   </table>
+  <p style="margin:16px 0 0;${font}font-size:12px;color:#8a7d72;">Neogen · Consultoria LinkedIn Estratégico</p>
 </td></tr>
 </table>
 </body>

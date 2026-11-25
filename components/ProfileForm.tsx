@@ -9,7 +9,7 @@ import { githubUser, linkedinSlug, linkedinUrl, maskPhone } from '@/lib/mask';
 import { normalizeWhatsapp, type Profile } from '@/lib/types';
 
 /** Dados que a própria pessoa preenche. No primeiro acesso também oferece trocar a senha. */
-export function ProfileForm({ profile, onboarding = false }: { profile: Profile; onboarding?: boolean }) {
+export function ProfileForm({ profile, onboarding = false, askPassword = true }: { profile: Profile; onboarding?: boolean; askPassword?: boolean }) {
   const showGithub = profile.modules.includes('ctd') || profile.modules.includes('project');
   const [name, setName] = useState(profile.name);
   const [whatsapp, setWhatsapp] = useState(maskPhone(profile.whatsapp));
@@ -64,7 +64,7 @@ export function ProfileForm({ profile, onboarding = false }: { profile: Profile;
       <PhoneField label="WhatsApp" hint="Com DDD. Seu mentor usa para falar com você." value={whatsapp} onChange={setWhatsapp} />
       <LinkedinField label="Seu perfil no LinkedIn" hint="Pode colar o link inteiro do seu perfil, que a gente ajusta. Se não souber, deixe em branco." value={linkedin} onChange={setLinkedin} />
       {showGithub && <GithubField label="Usuário do GitHub" hint="Pode colar o link do seu perfil ou digitar só o nome." value={github} onChange={setGithub} />}
-      {onboarding && (
+      {onboarding && askPassword && (
         <PasswordField label="Crie uma senha só sua" hint="Pelo menos 8 caracteres. Para continuar com a senha que recebeu, deixe em branco." value={password} onChange={setPassword} required={false} startVisible />
       )}
       {msg && (

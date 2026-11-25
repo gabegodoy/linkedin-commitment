@@ -5,7 +5,8 @@ import { todayISO } from '@/lib/dates';
 import { requireProfile } from '@/lib/session';
 import { firstName } from '@/lib/types';
 
-export default async function BemVindoPage() {
+export default async function BemVindoPage({ searchParams }: { searchParams: Promise<{ senha?: string }> }) {
+  const hasOwnPassword = (await searchParams).senha === 'ok';
   const { profile } = await requireProfile();
   if (profile.role === 'mentor' || profile.onboarded_at) redirect('/');
   return (
@@ -23,7 +24,7 @@ export default async function BemVindoPage() {
           <WordOfDay day={todayISO()} />
         </div>
         <div className="card pad">
-          <ProfileForm profile={profile} onboarding />
+          <ProfileForm profile={profile} onboarding askPassword={!hasOwnPassword} />
         </div>
       </div>
     </main>

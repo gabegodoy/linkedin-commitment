@@ -70,7 +70,7 @@ export default async function MenteePage({ params }: { params: Promise<{ id: str
           <h2>
             <span>Acesso</span>
           </h2>
-          <MenteeAccess userId={id} name={person.name} />
+          <MenteeAccess userId={id} name={person.name} whatsapp={person.whatsapp} />
         </section>
         <section>
           <h2>

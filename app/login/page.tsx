@@ -22,7 +22,7 @@ export default async function LoginPage() {
             Entrar<em>.</em>
           </h1>
           <p className="soft" style={{ margin: '8px 0 0' }}>
-            Use o e-mail e a senha que o seu mentor passou.
+            Use o seu e-mail e a sua senha.
           </p>
         </div>
         <div className="card pad">

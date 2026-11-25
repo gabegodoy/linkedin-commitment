@@ -47,9 +47,9 @@ function easyPassword() {
 }
 
 /** Devolve '' se enviou, ou a mensagem de erro. */
-async function sendWelcome(userId: string, password: string) {
+async function sendWelcome(userId: string) {
   try {
-    const res = await fetch('/api/welcome', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId, password }) });
+    const res = await fetch('/api/welcome', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId }) });
     if (res.ok) return '';
     return ((await res.json().catch(() => null)) as { error?: string } | null)?.error ?? 'Não foi possível enviar o e-mail.';
   } catch {
@@ -64,6 +64,11 @@ function SendEmailCheck({ checked, onChange, label }: { checked: boolean; onChan
       {label}
     </label>
   );
+}
+
+/** Senha forte que ninguém vê: a pessoa cria a dela pelo link de acesso. */
+function hiddenPassword() {
+  return Array.from(crypto.getRandomValues(new Uint8Array(24)), (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 const cleanName = (v: string) => v.trim().replace(/\s+/g, ' ');
@@ -91,12 +96,12 @@ export function NewMenteeForm() {
     const gh = githubUser(github);
     const li = linkedinSlug(linkedin);
     if (gh && !GITHUB_USER_RE.test(gh)) return setMsg({ ok: false, text: 'Usuário do GitHub inválido.' });
-    if (password.length < 8) return setMsg({ ok: false, text: 'A senha inicial precisa ter pelo menos 8 caracteres.' });
+    if (!sendEmail && password.length < 8) return setMsg({ ok: false, text: 'A senha inicial precisa ter pelo menos 8 caracteres.' });
     if (modules.length === 0) return setMsg({ ok: false, text: 'Libere pelo menos um módulo.' });
     setBusy(true);
     setMsg(null);
     const supabase = createClient();
-    const { data, error } = await supabase.rpc('create_mentee', { p_email: email, p_password: password, p_name: cleanName(name), p_modules: modules });
+    const { data, error } = await supabase.rpc('create_mentee', { p_email: email, p_password: sendEmail ? hiddenPassword() : password, p_name: cleanName(name), p_modules: modules });
     if (error) {
       setBusy(false);
       return setMsg({ ok: false, text: friendly(error.message) });
@@ -105,7 +110,7 @@ export function NewMenteeForm() {
       await supabase.from('profiles').update({ whatsapp: wa, linkedin_url: linkedinUrl(li), github_username: isDev && gh ? gh : null }).eq('id', data);
     }
     if (sendEmail) {
-      const warning = await sendWelcome(data, password);
+      const warning = await sendWelcome(data);
       if (warning) {
         setBusy(false);
         setCreated({ id: data, warning });
@@ -120,7 +125,7 @@ export function NewMenteeForm() {
     return (
       <div className="card pad stack">
         <b>Pessoa cadastrada, mas o e-mail não saiu.</b>
-        <span className="soft">{created.warning} Passe o e-mail e a senha para ela por outro meio: {email} / {password}</span>
+        <span className="soft">{created.warning} Abra a página da pessoa para mandar o link de acesso pelo WhatsApp ou definir uma senha.</span>
         <div className="actions">
           <button type="button" className="btn" onClick={() => router.push('/mentor/' + created.id)}>
             Abrir a página da pessoa
@@ -148,12 +153,17 @@ export function NewMenteeForm() {
         </label>
         <EmailField label="E-mail" value={email} onChange={setEmail} autoComplete="off" />
       </div>
-      <PasswordField label="Senha inicial" hint="Você passa para a pessoa. No primeiro acesso ela pode criar uma senha própria." value={password} onChange={setPassword} autoComplete="off" startVisible />
-      <div className="actions">
-        <button type="button" className="ghost sm" onClick={() => setPassword(easyPassword())}>
-          Gerar uma senha
-        </button>
-      </div>
+      <SendEmailCheck checked={sendEmail} onChange={setSendEmail} label="Enviar por e-mail um link para a pessoa criar a própria senha" />
+      {!sendEmail && (
+        <>
+          <PasswordField label="Senha inicial" hint="Você passa para a pessoa. No primeiro acesso ela pode criar uma senha própria." value={password} onChange={setPassword} autoComplete="off" startVisible />
+          <div className="actions">
+            <button type="button" className="ghost sm" onClick={() => setPassword(easyPassword())}>
+              Gerar uma senha
+            </button>
+          </div>
+        </>
+      )}
       <ModulePicker value={modules} onChange={setModules} />
       <div className="field">
         Opcionais
@@ -164,7 +174,6 @@ export function NewMenteeForm() {
         <LinkedinField light label="Perfil no LinkedIn" value={linkedin} onChange={setLinkedin} />
       </div>
       {isDev && <GithubField light label="Usuário do GitHub" value={github} onChange={setGithub} />}
-      <SendEmailCheck checked={sendEmail} onChange={setSendEmail} label="Enviar e-mail de boas-vindas com os dados de acesso" />
       <Note msg={msg} />
       <div className="actions">
         <button className="btn" type="submit" disabled={busy}>
@@ -266,31 +275,40 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
   );
 }
 
-export function MenteeAccess({ userId, name }: { userId: string; name: string }) {
+export function MenteeAccess({ userId, name, whatsapp }: { userId: string; name: string; whatsapp: string | null }) {
   const router = useRouter();
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<Msg>(null);
   const [armed, setArmed] = useState(false);
-  const [sendEmail, setSendEmail] = useState(false);
+  const [link, setLink] = useState('');
+  const first = name.trim().split(/\s+/)[0];
+
+  async function emailLink() {
+    setBusy(true);
+    const warning = await sendWelcome(userId);
+    setBusy(false);
+    setLink('');
+    setMsg(warning ? { ok: false, text: warning } : { ok: true, text: 'Link de acesso enviado por e-mail. Vale por 7 dias.' });
+  }
+
+  async function makeLink() {
+    setBusy(true);
+    const { data, error } = await createClient().rpc('create_access_link', { p_user: userId });
+    setBusy(false);
+    if (error) return setMsg({ ok: false, text: friendly(error.message) });
+    setLink(`${window.location.origin}/acesso/${data}`);
+    setMsg({ ok: true, text: 'Link gerado. Vale por 7 dias e só pode ser usado uma vez. Gerar outro cancela este.' });
+  }
 
   async function reset(e: React.FormEvent) {
     e.preventDefault();
     if (password.length < 8) return setMsg({ ok: false, text: 'A senha precisa ter pelo menos 8 caracteres.' });
     setBusy(true);
     const { error } = await createClient().rpc('set_mentee_password', { p_user: userId, p_password: password });
-    if (error) {
-      setBusy(false);
-      return setMsg({ ok: false, text: friendly(error.message) });
-    }
-    const warning = sendEmail ? await sendWelcome(userId, password) : '';
     setBusy(false);
-    setMsg(
-      sendEmail && !warning
-        ? { ok: true, text: 'Senha trocada e enviada por e-mail.' }
-        : { ok: !warning, text: `Senha trocada. ${warning ? warning + ' ' : ''}Anote e passe para a pessoa: ${password}` },
-    );
-    setPassword('');
+    setMsg(error ? { ok: false, text: friendly(error.message) } : { ok: true, text: `Senha trocada. Anote e passe para a pessoa: ${password}` });
+    if (!error) setPassword('');
   }
 
   async function remove() {
@@ -310,24 +328,54 @@ export function MenteeAccess({ userId, name }: { userId: string; name: string })
     router.refresh();
   }
 
+  const waText = `Olá, ${first}! Criei o seu espaço no Compromisso. Abra este link e crie a sua senha para entrar: ${link}`;
+
   return (
     <div className="card pad form">
+      <div className="field">
+        Link de acesso
+        <small>A pessoa abre o link e cria a própria senha. Serve para o primeiro acesso e para quem esqueceu a senha.</small>
+      </div>
+      <div className="actions">
+        <button type="button" className="btn sm" disabled={busy} onClick={emailLink}>
+          Enviar por e-mail
+        </button>
+        <button type="button" className="ghost sm" disabled={busy} onClick={makeLink}>
+          Gerar link para copiar
+        </button>
+      </div>
+      {link && (
+        <>
+          <input className="in" readOnly value={link} onFocus={(e) => e.target.select()} aria-label="Link de acesso" />
+          <div className="actions">
+            <button type="button" className="ghost sm" onClick={() => navigator.clipboard?.writeText(link).then(() => setMsg({ ok: true, text: 'Link copiado.' }))}>
+              Copiar link
+            </button>
+            {whatsapp && (
+              <a className="ghost sm wa" href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(waText)}`} target="_blank" rel="noopener noreferrer">
+                Mandar no WhatsApp
+              </a>
+            )}
+          </div>
+        </>
+      )}
+      <Note msg={msg} />
       <form className="form" onSubmit={reset}>
-        <PasswordField label={`Nova senha para ${name}`} hint="Pelo menos 8 caracteres." value={password} onChange={setPassword} autoComplete="off" startVisible />
-        <SendEmailCheck checked={sendEmail} onChange={setSendEmail} label="Enviar os dados de acesso por e-mail" />
-        <Note msg={msg} />
+        <PasswordField label={`Ou defina você uma senha para ${first}`} hint="Pelo menos 8 caracteres." value={password} onChange={setPassword} autoComplete="off" startVisible />
         <div className="actions">
           <button type="button" className="ghost sm" onClick={() => setPassword(easyPassword())}>
             Gerar uma senha
           </button>
-          <button className="ghost" type="submit" disabled={busy}>
+          <button className="ghost sm" type="submit" disabled={busy}>
             Trocar senha
-          </button>
-          <button type="button" className="ghost danger" disabled={busy} onClick={remove}>
-            {armed ? 'Clique de novo para apagar tudo' : 'Remover pessoa'}
           </button>
         </div>
       </form>
+      <div className="actions">
+        <button type="button" className="ghost sm danger" disabled={busy} onClick={remove}>
+          {armed ? 'Clique de novo para apagar tudo' : 'Remover pessoa'}
+        </button>
+      </div>
     </div>
   );
 }

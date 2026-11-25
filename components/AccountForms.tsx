@@ -71,7 +71,7 @@ export function TestEmailButton() {
   }
   return (
     <div className="form">
-      <span className="soft">Envia para o seu e-mail o mesmo modelo de boas-vindas que as pessoas recebem, com uma senha de exemplo.</span>
+      <span className="soft">Envia para o seu e-mail o mesmo modelo de e-mail de acesso que as pessoas recebem. No teste, o botão só abre o site.</span>
       {msg && (
         <p className={'msg ' + (msg.ok ? 'ok' : 'err')} role="status">
           {msg.text}
