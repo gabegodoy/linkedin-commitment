@@ -10,9 +10,10 @@ export const metadata: Metadata = {
   title: 'compromisso. · mentoria LinkedIn',
   description: 'Acompanhamento das metas diárias e do checklist do LinkedIn.',
   robots: { index: false, follow: false },
+  appleWebApp: { capable: true, title: 'compromisso', statusBarStyle: 'black-translucent' },
 };
 
-export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#0b0908' };
 
 const themeScript = `try{var t=localStorage.getItem('theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t)}catch(e){}`;
 

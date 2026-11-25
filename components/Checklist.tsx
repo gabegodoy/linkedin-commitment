@@ -4,11 +4,16 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { GROUPS, TOTAL_ITEMS, type Item } from '@/lib/checklist';
 import type { MentorItem } from '@/lib/types';
+import { weekPlan } from '@/lib/plan';
+import { CHEERS } from '@/lib/words';
 
 type Extra = { focus: boolean; note: string | null };
 
-export function Checklist({ userId, initialDone, mentorItems, mentor = false }: { userId: string; initialDone: number[]; mentorItems: MentorItem[]; mentor?: boolean }) {
-  const [done, setDone] = useState(() => new Set(initialDone));
+type Props = { userId: string; initialDoneAt: Record<number, string>; mentorItems: MentorItem[]; weeklyTarget: number; monday: string; today: string; mentor?: boolean };
+
+export function Checklist({ userId, initialDoneAt, mentorItems, weeklyTarget, monday, today, mentor = false }: Props) {
+  const [doneAt, setDoneAt] = useState(initialDoneAt);
+  const done = new Set(Object.keys(doneAt).map(Number));
   const [extra, setExtra] = useState<Record<number, Extra>>(() => Object.fromEntries(mentorItems.map((m) => [m.item_id, { focus: m.focus, note: m.note }])));
   const [editing, setEditing] = useState<number | null>(null);
   const [draft, setDraft] = useState('');
@@ -16,18 +21,18 @@ export function Checklist({ userId, initialDone, mentorItems, mentor = false }: 
   const fail = () => setError('Não foi possível salvar. Verifique a internet e tente de novo.');
 
   async function toggle(id: number) {
-    const next = new Set(done);
     const value = !done.has(id);
-    if (value) next.add(id);
-    else next.delete(id);
-    const previous = done;
-    setDone(next);
+    const next = { ...doneAt };
+    if (value) next[id] = today;
+    else delete next[id];
+    const previous = doneAt;
+    setDoneAt(next);
     setError('');
     const { error } = await createClient()
       .from('checklist_done')
       .upsert({ user_id: userId, item_id: id, done: value, updated_at: new Date().toISOString() }, { onConflict: 'user_id,item_id' });
     if (error) {
-      setDone(previous);
+      setDoneAt(previous);
       fail();
     }
   }
@@ -120,8 +125,12 @@ export function Checklist({ userId, initialDone, mentorItems, mentor = false }: 
     );
   }
 
-  const isFocus = (it: Item) => !!extra[it.id]?.focus;
-  const focus = GROUPS.flatMap((g) => g.items).filter(isFocus);
+  const focusIds = new Set(Object.keys(extra).map(Number).filter((id) => extra[id].focus));
+  const plan = weekPlan(doneAt, focusIds, weeklyTarget, monday);
+  const planIds = new Set(plan.map((p) => p.item.id));
+  const planDone = plan.filter((p) => p.done).length;
+  const focus = plan.map((p) => p.item);
+  const isFocus = (it: Item) => planIds.has(it.id);
   const pct = Math.round((done.size / TOTAL_ITEMS) * 100);
 
   return (
@@ -148,12 +157,17 @@ export function Checklist({ userId, initialDone, mentorItems, mentor = false }: 
           <h2 className="hi">
             <span>Para fazer esta semana</span>
             <span>
-              {focus.filter((it) => done.has(it.id)).length} de {focus.length}
+              {planDone} de {plan.length} feitos
             </span>
           </h2>
           <div className="card" style={{ borderColor: 'var(--line-2)' }}>
             {focus.map(row)}
           </div>
+          {planDone >= plan.length && (
+            <p className="msg ok" role="status">
+              {CHEERS.weekDone}
+            </p>
+          )}
         </>
       )}
       {GROUPS.map((g) => {

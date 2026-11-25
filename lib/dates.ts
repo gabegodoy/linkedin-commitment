@@ -24,6 +24,15 @@ export function mondayOf(iso: string): string {
   return addDays(iso, -((weekday(iso) + 6) % 7));
 }
 
+/** Converte um instante (timestamp ISO) para a data no fuso de Brasília. */
+export function dateInTZ(timestamp: string): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date(timestamp));
+}
+
+export function monthLabel(iso: string): string {
+  return new Intl.DateTimeFormat('pt-BR', { month: 'long', timeZone: 'UTC' }).format(toDate(iso));
+}
+
 export function formatLong(iso: string): string {
   return new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(toDate(iso));
 }

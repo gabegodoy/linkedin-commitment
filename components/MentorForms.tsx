@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { friendly } from '@/lib/errors';
 import { GITHUB_USER_RE } from '@/lib/github';
-import { MODULES, type Module, type Profile } from '@/lib/types';
+import { MODULES, cleanGithub, normalizeWhatsapp, type Module, type Profile } from '@/lib/types';
 
 type Msg = { ok: boolean; text: string } | null;
 function ModulePicker({ value, onChange }: { value: Module[]; onChange: (v: Module[]) => void }) {
@@ -44,18 +44,29 @@ export function NewMenteeForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [modules, setModules] = useState<Module[]>(['daily', 'checklist']);
+  const [whatsapp, setWhatsapp] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [github, setGithub] = useState('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<Msg>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    const wa = normalizeWhatsapp(whatsapp);
+    const gh = cleanGithub(github);
+    if (wa === false) return setMsg({ ok: false, text: 'Confira o WhatsApp: DDD e número.' });
+    if (gh && !GITHUB_USER_RE.test(gh)) return setMsg({ ok: false, text: 'Usuário do GitHub inválido.' });
     setBusy(true);
     setMsg(null);
-    const { data, error } = await createClient().rpc('create_mentee', { p_email: email, p_password: password, p_name: name, p_modules: modules });
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc('create_mentee', { p_email: email, p_password: password, p_name: name, p_modules: modules });
     setBusy(false);
     if (error) {
       setMsg({ ok: false, text: friendly(error.message) });
       return;
+    }
+    if (wa || gh || linkedin.trim()) {
+      await supabase.from('profiles').update({ whatsapp: wa, github_username: gh || null, linkedin_url: linkedin.trim() || null }).eq('id', data);
     }
     router.push('/mentor/' + data);
   }
@@ -87,6 +98,26 @@ export function NewMenteeForm() {
         <input required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" />
       </label>
       <ModulePicker value={modules} onChange={setModules} />
+      <div className="field">
+        Opcionais
+        <small>Se ficar em branco, a própria pessoa preenche no primeiro acesso.</small>
+      </div>
+      <div className="grid2">
+        <label className="field" style={{ fontWeight: 400 }}>
+          <small>WhatsApp, com DDD</small>
+          <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="48 99999-0000" />
+        </label>
+        <label className="field" style={{ fontWeight: 400 }}>
+          <small>Link do perfil no LinkedIn</small>
+          <input type="url" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://www.linkedin.com/in/..." />
+        </label>
+      </div>
+      {(modules.includes('ctd') || modules.includes('project')) && (
+        <label className="field" style={{ fontWeight: 400 }}>
+          <small>Usuário do GitHub</small>
+          <input value={github} onChange={(e) => setGithub(e.target.value)} autoCapitalize="none" spellCheck={false} />
+        </label>
+      )}
       <Note msg={msg} />
       <div className="actions">
         <button className="btn" type="submit" disabled={busy}>
@@ -114,6 +145,8 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
     objective: profile.objective ?? '',
     linkedin_url: profile.linkedin_url ?? '',
     github_username: profile.github_username ?? '',
+    whatsapp: profile.whatsapp ?? '',
+    weekly_items: profile.weekly_items,
     modules: profile.modules,
     goal_connections: profile.goal_connections,
     goal_likes: profile.goal_likes,
@@ -126,7 +159,12 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const gh = f.github_username.trim().replace(/^@/, '');
+    const gh = cleanGithub(f.github_username);
+    const wa = normalizeWhatsapp(f.whatsapp);
+    if (wa === false) {
+      setMsg({ ok: false, text: 'Confira o WhatsApp: DDD e número.' });
+      return;
+    }
     if (gh && !GITHUB_USER_RE.test(gh)) {
       setMsg({ ok: false, text: 'Usuário do GitHub inválido.' });
       return;
@@ -134,7 +172,7 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
     setBusy(true);
     const { error } = await createClient()
       .from('profiles')
-      .update({ ...f, name: f.name.trim(), objective: f.objective.trim() || null, linkedin_url: f.linkedin_url.trim() || null, github_username: gh || null })
+      .update({ ...f, name: f.name.trim(), objective: f.objective.trim() || null, linkedin_url: f.linkedin_url.trim() || null, github_username: gh || null, whatsapp: wa })
       .eq('id', profile.id);
     setBusy(false);
     setMsg(error ? { ok: false, text: friendly(error.message) } : { ok: true, text: 'Salvo.' });
@@ -153,6 +191,10 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
         <input value={f.objective} onChange={(e) => set({ objective: e.target.value })} maxLength={200} />
       </label>
       <label className="field">
+        WhatsApp, com DDD
+        <input type="tel" value={f.whatsapp} onChange={(e) => set({ whatsapp: e.target.value })} placeholder="48 99999-0000" />
+      </label>
+      <label className="field">
         Link do perfil no LinkedIn
         <input type="url" value={f.linkedin_url} onChange={(e) => set({ linkedin_url: e.target.value })} placeholder="https://www.linkedin.com/in/..." />
       </label>
@@ -169,8 +211,15 @@ export function MenteeSettings({ profile }: { profile: Profile }) {
         </div>
       </div>
       )}
+      {f.modules.includes('checklist') && (
+        <label className="field">
+          Itens do checklist por semana
+          <small>A pessoa vê esse número de itens em "Para fazer esta semana". O que você colocar no foco entra primeiro; o resto segue a ordem do checklist.</small>
+          <input type="number" min={0} max={10} required value={f.weekly_items} onChange={(e) => set({ weekly_items: Number(e.target.value) })} style={{ maxWidth: 120 }} />
+        </label>
+      )}
       <ModulePicker value={f.modules} onChange={(modules) => set({ modules })} />
-      {f.modules.includes('ctd') && (
+      {(f.modules.includes('ctd') || f.modules.includes('project')) && (
         <label className="field">
           Usuário do GitHub
           <input value={f.github_username} onChange={(e) => set({ github_username: e.target.value })} autoCapitalize="none" spellCheck={false} />

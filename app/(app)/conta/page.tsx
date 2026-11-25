@@ -1,5 +1,5 @@
 import { LogoutButton, PasswordForm } from '@/components/AccountForms';
-import { GithubUserForm } from '@/components/GithubUserForm';
+import { ProfileForm } from '@/components/ProfileForm';
 import { requireProfile } from '@/lib/session';
 
 export default async function ContaPage() {
@@ -16,13 +16,13 @@ export default async function ContaPage() {
           {profile.email}
         </p>
       </div>
-      {profile.modules.includes('ctd') && (
+      {profile.role === 'mentee' && (
         <>
           <h2>
-            <span>GitHub</span>
+            <span>Meus dados</span>
           </h2>
           <div className="card pad">
-            <GithubUserForm userId={profile.id} initial={profile.github_username} />
+            <ProfileForm profile={profile} />
           </div>
         </>
       )}

@@ -26,6 +26,9 @@ export type Profile = {
   objective: string | null;
   linkedin_url: string | null;
   github_username: string | null;
+  whatsapp: string | null;
+  onboarded_at: string | null;
+  weekly_items: number;
   goal_connections: number;
   goal_likes: number;
   goal_comments: number;
@@ -47,6 +50,32 @@ export type Project = {
 
 export function goalsOf(p: Profile): Counts {
   return [p.goal_connections, p.goal_likes, p.goal_comments, p.goal_posts];
+}
+
+/** Só dígitos, com 55 na frente quando vier sem o código do país. Vazio vira null. */
+export function normalizeWhatsapp(raw: string): string | null | false {
+  const d = raw.replace(/\D/g, '');
+  if (!d) return null;
+  const full = d.length <= 11 ? '55' + d : d;
+  return /^[0-9]{12,15}$/.test(full) ? full : false;
+}
+
+export function whatsappLink(number: string, message: string) {
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+}
+
+/** Mensagem pronta para o mentor mandar, conforme a pessoa está ativa ou parada. */
+export function nudgeMessage(name: string, quiet: boolean, run: number) {
+  const first = firstName(name);
+  if (quiet) {
+    return `Oi, ${first}! Senti sua falta no compromisso. Tudo bem por aí? Que tal retomar hoje, nem que seja com uma meta só? "Não nos cansemos de fazer o bem, porque a seu tempo ceifaremos." (Gálatas 6:9) Conte comigo!`;
+  }
+  if (run >= 3) return `Oi, ${first}! Vi que você está há ${run} dias seguidos cumprindo as metas. Que orgulho! Continue firme, o resultado vem.`;
+  return `Oi, ${first}! Passando para dizer que estou acompanhando seu progresso. Um pouco por dia, todo dia. Conte comigo!`;
+}
+
+export function cleanGithub(raw: string) {
+  return raw.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?github\.com\//, '').replace(/\/.*$/, '');
 }
 
 export function firstName(name: string) {

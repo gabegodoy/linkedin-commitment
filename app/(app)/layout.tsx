@@ -1,9 +1,11 @@
+import { redirect } from 'next/navigation';
 import { Nav, type NavLink } from '@/components/Nav';
 import { requireProfile } from '@/lib/session';
 import { MODULES, has } from '@/lib/types';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile } = await requireProfile();
+  if (profile.role === 'mentee' && !profile.onboarded_at) redirect('/bem-vindo');
   const links: NavLink[] =
     profile.role === 'mentor'
       ? [

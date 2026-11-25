@@ -2,7 +2,7 @@ import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from './supabase/server';
 import { has, homeOf, type MentorItem, type Module, type Profile } from './types';
-import { addDays } from './dates';
+import { addDays, dateInTZ } from './dates';
 import { toLogs } from './progress';
 
 export const getSession = cache(async () => {
@@ -38,12 +38,13 @@ type Client = Awaited<ReturnType<typeof createClient>>;
 export async function loadMenteeData(supabase: Client, userId: string, today: string) {
   const [logs, done, items] = await Promise.all([
     supabase.from('daily_log').select('day, connections, likes, comments, posts').eq('user_id', userId).gte('day', addDays(today, -500)),
-    supabase.from('checklist_done').select('item_id').eq('user_id', userId).eq('done', true),
+    supabase.from('checklist_done').select('item_id, updated_at').eq('user_id', userId).eq('done', true),
     supabase.from('mentor_items').select('item_id, focus, note').eq('user_id', userId),
   ]);
   return {
     logs: toLogs(logs.data),
     done: (done.data ?? []).map((r) => r.item_id as number),
+    doneAt: Object.fromEntries((done.data ?? []).map((r) => [r.item_id as number, dateInTZ(r.updated_at as string)])) as Record<number, string>,
     mentorItems: (items.data ?? []) as MentorItem[],
   };
 }

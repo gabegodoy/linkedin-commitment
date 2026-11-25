@@ -4,7 +4,7 @@ import { TOTAL_ITEMS } from '@/lib/checklist';
 import { addDays, formatLong, formatShort, mondayOf, todayISO } from '@/lib/dates';
 import { ZERO, isFull, score, streak, toLogs, total, type Logs } from '@/lib/progress';
 import { requireMentor } from '@/lib/session';
-import { goalsOf, has, type Profile } from '@/lib/types';
+import { goalsOf, has, nudgeMessage, whatsappLink, type Profile } from '@/lib/types';
 
 export default async function MentorPage() {
   const { supabase } = await requireMentor();
@@ -62,13 +62,13 @@ export default async function MentorPage() {
             <span className="go" />
           </div>
           {rows.map((r) => (
-            <Link key={r.p.id} href={'/mentor/' + r.p.id} className="person">
+            <div key={r.p.id} className="person">
               <span className="who">
                 <b>
-                  {r.p.name}
+                  <Link href={'/mentor/' + r.p.id} style={{ color: 'inherit' }}>{r.p.name}</Link>
                   {has(r.p, 'ctd') && <span className="tag">dev</span>}
                 </b>
-                <small className={r.quiet ? 'warn' : undefined}>{r.last ? (r.last === today ? 'ativo hoje' : `última atividade em ${formatShort(r.last)}`) : 'ainda sem atividade'}</small>
+                <small className={r.quiet ? 'warn' : undefined}>{!r.p.onboarded_at ? 'ainda não fez o primeiro acesso' : r.last ? (r.last === today ? 'ativo hoje' : `última atividade em ${formatShort(r.last)}`) : 'ainda sem atividade'}</small>
               </span>
               <span className="cell">
                 <small>Hoje</small>
@@ -86,8 +86,17 @@ export default async function MentorPage() {
                 <small>Checklist</small>
                 {has(r.p, 'checklist') ? `${r.done} de ${TOTAL_ITEMS}` : '—'}
               </span>
-              <span className="go muted">abrir →</span>
-            </Link>
+              <span className="go">
+                {r.p.whatsapp && (
+                  <a className="ghost sm wa" href={whatsappLink(r.p.whatsapp, nudgeMessage(r.p.name, r.quiet, r.run))} target="_blank" rel="noopener noreferrer">
+                    {r.quiet ? 'Cobrar no WhatsApp' : 'WhatsApp'}
+                  </a>
+                )}
+                <Link className="ghost sm" href={'/mentor/' + r.p.id}>
+                  Abrir
+                </Link>
+              </span>
+            </div>
           ))}
         </div>
       )}

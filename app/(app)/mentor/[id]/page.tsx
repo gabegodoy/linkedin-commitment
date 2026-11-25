@@ -5,10 +5,11 @@ import { Contributions } from '@/components/Contributions';
 import { MenteeAccess, MenteeSettings } from '@/components/MentorForms';
 import { ProjectHistory } from '@/components/ProjectPanel';
 import { Today } from '@/components/Today';
-import { todayISO } from '@/lib/dates';
+import { addDays, mondayOf, todayISO } from '@/lib/dates';
 import { getContributions } from '@/lib/github';
 import { loadMenteeData, requireMentor } from '@/lib/session';
-import { goalsOf, has, type Profile, type Project } from '@/lib/types';
+import { goalsOf, has, nudgeMessage, whatsappLink, type Profile, type Project } from '@/lib/types';
+import { score, streak } from '@/lib/progress';
 
 export default async function MenteePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -23,6 +24,11 @@ export default async function MenteePage({ params }: { params: Promise<{ id: str
     has(person, 'project') ? supabase.from('weekly_projects').select('*').eq('user_id', id).order('week_start', { ascending: false }).limit(30) : null,
     has(person, 'ctd') && person.github_username ? getContributions(person.github_username) : null,
   ]);
+
+  const goals = goalsOf(person);
+  const active = Object.keys(mentee.logs).filter((d) => score(mentee.logs[d], goals) > 0).sort();
+  const last = active[active.length - 1];
+  const quiet = !last || last < addDays(today, -3);
 
   return (
     <>
@@ -45,6 +51,14 @@ export default async function MenteePage({ params }: { params: Promise<{ id: str
             </>
           )}
         </p>
+        {!person.onboarded_at && <p className="msg warn" style={{ marginTop: 6 }}>Ainda não fez o primeiro acesso.</p>}
+        {person.whatsapp && (
+          <div className="actions" style={{ marginTop: 12 }}>
+            <a className="ghost wa" href={whatsappLink(person.whatsapp, nudgeMessage(person.name, quiet, streak(mentee.logs, goals, today)))} target="_blank" rel="noopener noreferrer">
+              {quiet ? 'Cobrar no WhatsApp' : 'Mandar incentivo no WhatsApp'}
+            </a>
+          </div>
+        )}
       </div>
       <div className="cols">
         <section>
@@ -63,7 +77,7 @@ export default async function MenteePage({ params }: { params: Promise<{ id: str
             <span>Checklist do perfil</span>
           </h2>
           {has(person, 'checklist') ? (
-            <Checklist userId={id} initialDone={mentee.done} mentorItems={mentee.mentorItems} mentor />
+            <Checklist userId={id} initialDoneAt={mentee.doneAt} mentorItems={mentee.mentorItems} weeklyTarget={person.weekly_items} monday={mondayOf(today)} today={today} mentor />
           ) : (
             <div className="card pad soft">Checklist não liberado para esta pessoa. Marque o módulo em Dados e metas.</div>
           )}
